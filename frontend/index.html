@@ -1139,7 +1139,19 @@ function calculateResult(answers) {
 // ═══════════════════════════════════════════════════
 
 // ═══ 配置 ═══
-const API_BASE = ""; // 同源部署，留空即可；开发时可改为 "http://localhost:5000"
+const SUPABASE_URL = "https://csotjosczrbzfneqlubx.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzb3Rqb3NjenJiemZuZXFsdWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MDI2NjksImV4cCI6MjA5MTM3ODY2OX0.pWW_jmp_mjXJufUoYCewjtiqq9HpsKq4epEbyuJPfBw";
+var SB_HEADERS = {
+  "apikey": SUPABASE_KEY,
+  "Authorization": "Bearer " + SUPABASE_KEY,
+  "Content-Type": "application/json"
+};
+function sbHeaders(extra) {
+  var h = {};
+  for (var k in SB_HEADERS) h[k] = SB_HEADERS[k];
+  if (extra) for (var k2 in extra) h[k2] = extra[k2];
+  return h;
+}
 
 // ═══ 状态 ═══
 let currentQuestion = 0;
@@ -1384,39 +1396,35 @@ function showResult() {
 }
 
 function submitResult(result) {
-  var controller = new AbortController();
-  var timeoutId = setTimeout(function () {
-    controller.abort();
-  }, 3000);
-
-  fetch(API_BASE + "/api/submit", {
+  // 1. 插入记录到 Supabase
+  fetch(SUPABASE_URL + "/rest/v1/records", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: sbHeaders({"Prefer": "return=minimal"}),
     body: JSON.stringify({
-      answers: answers,
       result_code: result.typeCode,
       result_name: result.personality.name,
+      answers: answers,
     }),
-    signal: controller.signal,
-  })
-    .then(function (resp) {
-      clearTimeout(timeoutId);
-      if (resp.ok) {
-        return resp.json();
-      }
-      return null;
-    })
-    .then(function (data) {
-      if (data && data.stats) {
-        var statsEl = document.getElementById("result-stats");
-        statsEl.textContent = data.stats.percentage + " 的人和你是同类";
-        statsEl.style.display = "block";
-      }
-    })
-    .catch(function () {
-      // API 失败不阻塞
-      clearTimeout(timeoutId);
-    });
+  }).catch(function () {});
+
+  // 2. 查询同类型人数占比
+  var countHeaders = sbHeaders({"Prefer": "count=exact"});
+  Promise.all([
+    fetch(SUPABASE_URL + "/rest/v1/records?select=id&result_code=eq." + result.typeCode, {
+      method: "HEAD", headers: countHeaders,
+    }).then(function (r) { return parseInt(r.headers.get("content-range").split("/")[1]) || 0; }),
+    fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
+      method: "HEAD", headers: countHeaders,
+    }).then(function (r) { return parseInt(r.headers.get("content-range").split("/")[1]) || 0; })
+  ]).then(function (counts) {
+    var same = counts[0], total = counts[1];
+    if (total > 0) {
+      var pct = (same / total * 100).toFixed(1) + "%";
+      var statsEl = document.getElementById("result-stats");
+      statsEl.textContent = pct + " 的人和你是同类（共 " + total + " 人参与）";
+      statsEl.style.display = "block";
+    }
+  }).catch(function () {});
 }
 
 // ═══════════════════════════════════════════════════
@@ -1490,22 +1498,17 @@ showPage("home");
 
 // 获取统计数据
 (function () {
-  var controller = new AbortController();
-  setTimeout(function () {
-    controller.abort();
-  }, 3000);
-
-  fetch(API_BASE + "/api/stats", { signal: controller.signal })
+  fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
+    method: "HEAD",
+    headers: sbHeaders({"Prefer": "count=exact"}),
+  })
     .then(function (resp) {
-      if (resp.ok) {
-        return resp.json();
-      }
-      return null;
-    })
-    .then(function (data) {
-      if (data && data.total > 0) {
-        document.getElementById("total-count").textContent =
-          data.total.toLocaleString();
+      var range = resp.headers.get("content-range");
+      if (range) {
+        var total = parseInt(range.split("/")[1]) || 0;
+        if (total > 0) {
+          document.getElementById("total-count").textContent = total.toLocaleString();
+        }
       }
     })
     .catch(function () {
