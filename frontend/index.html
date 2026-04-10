@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>互联网大厂程序员人格鉴定 v2.0</title>
+  <style>
+    /* 核心变量 */
+    :root {
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --bg: #F5F5F5;
+      --card-bg: #FFFFFF;
+      --card-radius: 16px;
+      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --text: #333;
+      --text-light: #888;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    }
+
+    /* 基础重置 */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: var(--font);
+      margin: 0;
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* 渐变文字 */
+    .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* 等宽字体文字 */
+    .mono-text {
+      font-family: var(--mono);
+    }
+
+    /* 卡片 */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 24px;
+    }
+
+    /* 主按钮 */
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+    }
+
+    /* 次要按钮 */
+    .btn-secondary {
+      border: 2px solid #667eea;
+      color: #667eea;
+      background: transparent;
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(102, 126, 234, 0.2);
+    }
+
+    /* 文字按钮 */
+    .btn-text {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .btn-text:hover {
+      color: var(--text);
+    }
+
+    /* 选项卡片 */
+    .option-card {
+      background: var(--card-bg);
+      border: 2px solid #eee;
+      border-radius: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .option-card:hover {
+      transform: translateY(-2px);
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .option-card.selected {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    /* 题号导航按钮 */
+    .nav-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--text-light);
+    }
+
+    .nav-dot.answered {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .nav-dot.current {
+      border-color: #764ba2;
+      font-weight: bold;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #E0E0E0;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 维度条 */
+    .dim-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .dim-label {
+      font-size: 13px;
+      color: var(--text-light);
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .dim-bar {
+      flex: 1;
+      height: 12px;
+      background: #E0E0E0;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dim-fill-left {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+
+    /* 相性卡片 */
+    .compat-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .compat-card .compat-label {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .compat-card .compat-code {
+      font-weight: bold;
+      color: #667eea;
+      font-size: 15px;
+    }
+
+    .compat-card .compat-desc {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* 动画 */
+    .fade-in {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      flex-direction: column;
+    }
+
+    .page.active {
+      opacity: 1;
+    }
+
+    /* 响应式 - 桌面端 */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 720px;
+        padding: 40px;
+      }
+
+      #page-home h1.gradient-text {
+        font-size: 2.8rem;
+      }
+
+      #page-home .mono-text {
+        font-size: 16px;
+      }
+
+      .option-card {
+        padding: 20px 24px;
+        font-size: 16px;
+      }
+
+      .nav-dot {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+      }
+
+      #quiz-question {
+        font-size: 1.4rem;
+      }
+
+      #result-code {
+        font-size: 3rem;
+      }
+
+      #result-name {
+        font-size: 1.8rem;
+      }
+
+      #result-desc {
+        font-size: 16px;
+        padding: 28px;
+      }
+
+      .compat-card {
+        padding: 20px;
+      }
+
+      .compat-card .compat-code {
+        font-size: 17px;
+      }
+
+      .compat-card .compat-desc {
+        font-size: 14px;
+      }
+
+      .dim-label {
+        font-size: 15px;
+        min-width: 40px;
+      }
+
+      .dim-bar {
+        height: 14px;
+      }
+
+      .btn-primary, .btn-secondary {
+        font-size: 18px;
+        padding: 16px 40px;
+      }
+
+      #analyzing-text {
+        font-size: 16px;
+      }
+
+      .spinner {
+        width: 56px;
+        height: 56px;
+      }
+    }
+
+    /* 响应式 - 大屏桌面 */
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 800px;
+      }
+
+      #page-home h1.gradient-text {
+        font-size: 3.2rem;
+      }
+    }
+
+    /* 响应式 - 移动端 */
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px;
+      }
+
+      #result-compat {
+        grid-template-columns: 1fr;
+      }
+
+      h1.gradient-text {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 首页 -->
+  <section id="page-home" class="container page active" style="display:flex;flex-direction:column;align-items:center;min-height:100vh;justify-content:center">
+    <h1 class="gradient-text" style="font-size:2rem;text-align:center">互联网大厂程序员人格鉴定 v2.0</h1>
+    <p class="mono-text" style="color:var(--text-light);text-align:center;margin:8px 0 32px">// 测测你是什么类型的打工人</p>
+    <p id="stat-line" style="color:var(--text-light);font-size:14px;margin-bottom:32px">已有 <span id="total-count" style="color:#667eea;font-weight:bold">---</span> 位打工人完成测试</p>
+    <button id="btn-start" class="btn-primary">开始鉴定 →</button>
+    <p style="color:#bbb;font-size:12px;margin-top:48px">本测试纯属娱乐，如有雷同纯属内卷</p>
+  </section>
+
+  <!-- 答题页 -->
+  <section id="page-quiz" class="container page" style="display:none;flex-direction:column">
+    <div id="quiz-nav" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+    <div style="background:#E0E0E0;border-radius:3px;height:6px;margin-bottom:8px">
+      <div id="progress-bar" style="background:var(--gradient);height:100%;border-radius:3px;width:0;transition:width 0.3s ease"></div>
+    </div>
+    <p id="quiz-number" style="color:var(--text-light);font-size:14px;margin-bottom:16px">Q1/32</p>
+    <div id="quiz-question-wrap">
+      <h2 id="quiz-question" style="font-size:1.25rem;margin-bottom:24px"></h2>
+      <div id="quiz-options"></div>
+    </div>
+  </section>
+
+  <!-- 分析中页 -->
+  <section id="page-analyzing" class="container page" style="min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center">
+    <div class="spinner"></div>
+    <div id="analyzing-text" style="font-family:var(--mono);color:#27AE60;font-size:14px;margin-top:32px;min-height:120px;line-height:2"></div>
+    <div style="width:200px;background:#E0E0E0;border-radius:3px;height:4px;margin-top:24px">
+      <div id="analyzing-bar" style="background:var(--gradient);height:100%;border-radius:3px;width:0;transition:width 0.5s ease"></div>
+    </div>
+  </section>
+
+  <!-- 结果页 -->
+  <section id="page-result" class="container page" style="display:none;flex-direction:column;padding-bottom:60px">
+    <div style="text-align:center;margin:32px 0">
+      <p style="color:var(--text-light);font-size:14px;margin-bottom:8px">你的程序员人格是</p>
+      <h1 id="result-code" class="gradient-text" style="font-size:2.5rem;margin:0">---</h1>
+      <h2 id="result-name" style="font-size:1.5rem;color:var(--text);margin:8px 0 0">---</h2>
+    </div>
+    <div id="result-svg" style="text-align:center;margin:24px 0"></div>
+    <div id="result-desc" class="card" style="border-left:4px solid #667eea;margin:24px 0;font-size:15px;line-height:1.8;color:#555"></div>
+    <div id="result-dimensions" style="margin:24px 0"></div>
+    <p id="result-stats" style="text-align:center;color:var(--text-light);font-size:14px;margin:16px 0;display:none"></p>
+    <div id="result-compat" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:32px">
+      <button id="btn-share" class="btn-primary" style="width:100%;max-width:320px">📋 生成分享文案</button>
+      <button id="btn-invite" class="btn-secondary" style="width:100%;max-width:320px">🔗 拉同事来测</button>
+      <button id="btn-restart" class="btn-text" style="margin-top:8px">重新测试</button>
+    </div>
+    <div id="copy-toast" style="position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;opacity:0;transition:opacity 0.3s;pointer-events:none">已复制到剪贴板！</div>
+  </section>
+
+  <!-- 隐藏的 SVG 容器 -->
+  <div id="svg-container" style="display:none">
+<!-- 1. CRUD — 996.ICU — 趴在桌上，头顶输液瓶 -->
+<svg data-type="CRUD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 桌子 -->
+  <line x1="15" y1="95" x2="105" y2="95" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="20" y1="95" x2="20" y2="130" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="100" y1="95" x2="100" y2="130" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 键盘轮廓 -->
+  <rect x="50" y="82" width="40" height="12" rx="2" stroke="#E74C3C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="58" y1="86" x2="62" y2="86" stroke="#E74C3C" stroke-width="1" stroke-linecap="round"/>
+  <line x1="66" y1="86" x2="70" y2="86" stroke="#E74C3C" stroke-width="1" stroke-linecap="round"/>
+  <line x1="74" y1="86" x2="78" y2="86" stroke="#E74C3C" stroke-width="1" stroke-linecap="round"/>
+  <line x1="58" y1="90" x2="78" y2="90" stroke="#E74C3C" stroke-width="1" stroke-linecap="round"/>
+  <!-- 趴着的头（侧面贴桌） -->
+  <circle cx="38" cy="82" r="16" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 闭眼 -->
+  <line x1="31" y1="80" x2="36" y2="80" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="40" y1="80" x2="45" y2="80" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+  <!-- 手臂趴桌 -->
+  <line x1="38" y1="95" x2="25" y2="110" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="38" y1="95" x2="50" y2="105" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 身体（椅子上） -->
+  <line x1="38" y1="95" x2="38" y2="125" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="38" y1="125" x2="28" y2="148" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="38" y1="125" x2="48" y2="148" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 输液瓶 -->
+  <rect x="70" y="10" width="10" height="14" rx="1" stroke="#E74C3C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="75" y1="24" x2="75" y2="45" stroke="#E74C3C" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 2"/>
+  <line x1="75" y1="45" x2="50" y2="70" stroke="#E74C3C" stroke-width="1" stroke-linecap="round" stroke-dasharray="2 2"/>
+  <!-- 输液瓶里的液体点缀 -->
+  <rect x="72" y="13" width="6" height="6" rx="1" fill="#FADBD8" stroke="none"/>
+</svg>
+
+<!-- 2. CRUH — git push -f — 双手举笔记本往前冲 -->
+<svg data-type="CRUH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="55" cy="35" r="18" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 风吹头发 -->
+  <line x1="55" y1="18" x2="75" y2="12" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="20" x2="72" y2="16" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/>
+  <line x1="48" y1="24" x2="70" y2="22" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/>
+  <!-- 眼睛（坚定） -->
+  <circle cx="50" cy="33" r="2" fill="#E67E22"/>
+  <circle cx="62" cy="33" r="2" fill="#E67E22"/>
+  <!-- 嘴巴（咬牙） -->
+  <line x1="52" y1="42" x2="60" y2="42" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体前倾 -->
+  <line x1="55" y1="53" x2="50" y2="100" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 双手举笔记本电脑 -->
+  <rect x="18" y="58" width="35" height="22" rx="2" stroke="#E67E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="20" y="60" width="31" height="15" rx="1" stroke="#E67E22" stroke-width="1" stroke-linecap="round"/>
+  <!-- 手臂举笔记本 -->
+  <line x1="55" y1="60" x2="53" y2="65" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="55" y1="60" x2="18" y2="68" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿（奔跑姿态） -->
+  <line x1="50" y1="100" x2="30" y2="130" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="30" y1="130" x2="22" y2="150" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="50" y1="100" x2="70" y2="125" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="70" y1="125" x2="80" y2="150" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 3. CRSD — README.md — 话筒+OK手势+墨镜 -->
+<svg data-type="CRSD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#F1C40F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 墨镜 -->
+  <rect x="44" y="28" width="12" height="9" rx="1" stroke="#F1C40F" stroke-width="2" stroke-linecap="round" fill="#FEF9E7"/>
+  <rect x="62" y="28" width="12" height="9" rx="1" stroke="#F1C40F" stroke-width="2" stroke-linecap="round" fill="#FEF9E7"/>
+  <line x1="56" y1="32" x2="62" y2="32" stroke="#F1C40F" stroke-width="2" stroke-linecap="round"/>
+  <!-- 嘴巴微笑 -->
+  <path d="M54 43 Q60 48 66 43" stroke="#F1C40F" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="105" stroke="#F1C40F" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左手举话筒 -->
+  <line x1="60" y1="65" x2="30" y2="55" stroke="#F1C40F" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="30" y1="55" x2="25" y2="45" stroke="#F1C40F" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="25" cy="40" r="5" stroke="#F1C40F" stroke-width="2" stroke-linecap="round"/>
+  <!-- 右手OK手势 -->
+  <line x1="60" y1="70" x2="90" y2="60" stroke="#F1C40F" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="95" cy="56" r="6" stroke="#F1C40F" stroke-width="2" stroke-linecap="round"/>
+  <line x1="97" y1="50" x2="100" y2="44" stroke="#F1C40F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="99" y1="52" x2="104" y2="47" stroke="#F1C40F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="100" y1="55" x2="106" y2="52" stroke="#F1C40F" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="60" y1="105" x2="45" y2="148" stroke="#F1C40F" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="105" x2="75" y2="148" stroke="#F1C40F" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 4. CRSH — sudo rm -rf / — 西装+公文包+身后火焰 -->
+<svg data-type="CRSH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛 -->
+  <circle cx="54" cy="33" r="2" fill="#C0392B"/>
+  <circle cx="66" cy="33" r="2" fill="#C0392B"/>
+  <!-- 嘴巴（邪笑） -->
+  <path d="M53 42 Q60 46 67 40" stroke="#C0392B" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="105" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 西装V领 -->
+  <line x1="60" y1="53" x2="48" y2="72" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="53" x2="72" y2="72" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="53" x2="60" y2="68" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 左手 -->
+  <line x1="60" y1="68" x2="35" y2="85" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右手提公文包 -->
+  <line x1="60" y1="68" x2="88" y2="90" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="80" y="90" width="18" height="14" rx="2" stroke="#C0392B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="85" y1="90" x2="85" y2="87" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="93" y1="90" x2="93" y2="87" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 火焰 -->
+  <path d="M8 130 Q12 115 16 130 Q20 118 24 130" stroke="#C0392B" stroke-width="2" stroke-linecap="round" fill="#FADBD8"/>
+  <path d="M18 125 Q22 108 26 125 Q30 112 34 125" stroke="#C0392B" stroke-width="2" stroke-linecap="round" fill="#FADBD8"/>
+  <path d="M28 128 Q32 112 36 128 Q40 116 44 128" stroke="#C0392B" stroke-width="2" stroke-linecap="round" fill="#FADBD8"/>
+  <path d="M5 135 Q10 118 15 135 Q20 122 25 135" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 腿 -->
+  <line x1="60" y1="105" x2="48" y2="148" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="105" x2="72" y2="148" stroke="#C0392B" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 5. CBUD — sleep(MAX_INT) — 靠椅子+ZZZ -->
+<svg data-type="CBUD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 椅子靠背 -->
+  <line x1="75" y1="40" x2="75" y2="100" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="75" y1="100" x2="85" y2="140" stroke="#7F8C8D" stroke-width="2" stroke-linecap="round"/>
+  <line x1="45" y1="100" x2="80" y2="100" stroke="#7F8C8D" stroke-width="2" stroke-linecap="round"/>
+  <!-- 头（歪向一侧） -->
+  <circle cx="55" cy="40" r="18" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 闭眼 -->
+  <line x1="48" y1="38" x2="54" y2="38" stroke="#7F8C8D" stroke-width="2" stroke-linecap="round"/>
+  <line x1="58" y1="38" x2="64" y2="38" stroke="#7F8C8D" stroke-width="2" stroke-linecap="round"/>
+  <!-- 嘴巴（微张） -->
+  <ellipse cx="56" cy="47" rx="3" ry="2" stroke="#7F8C8D" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- ZZZ -->
+  <text x="68" y="22" font-size="10" font-weight="bold" fill="#7F8C8D" font-family="monospace">Z</text>
+  <text x="78" y="16" font-size="13" font-weight="bold" fill="#7F8C8D" font-family="monospace">Z</text>
+  <text x="90" y="8" font-size="16" font-weight="bold" fill="#7F8C8D" font-family="monospace">Z</text>
+  <!-- 身体靠椅 -->
+  <line x1="55" y1="58" x2="58" y2="100" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 手臂自然下垂 -->
+  <line x1="55" y1="70" x2="40" y2="90" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="55" y1="70" x2="70" y2="88" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="58" y1="100" x2="45" y2="130" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="45" y1="130" x2="42" y2="148" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="58" y1="100" x2="68" y2="130" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="68" y1="130" x2="72" y2="148" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 6. CBUH — localhost:3000 — 戴耳机+屏幕+虚线屏障 -->
+<svg data-type="CBUH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头（稍低头） -->
+  <circle cx="60" cy="38" r="18" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 耳机 -->
+  <path d="M42 32 Q42 16 60 16 Q78 16 78 32" stroke="#27AE60" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M39 30 Q35 30 35 38 Q35 44 39 44" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round" fill="#EAFAF1"/>
+  <path d="M81 30 Q85 30 85 38 Q85 44 81 44" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round" fill="#EAFAF1"/>
+  <!-- 眼睛（专注低头看） -->
+  <circle cx="54" cy="38" r="2" fill="#27AE60"/>
+  <circle cx="66" cy="38" r="2" fill="#27AE60"/>
+  <!-- 嘴巴 -->
+  <line x1="56" y1="45" x2="64" y2="45" stroke="#27AE60" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 身体 -->
+  <line x1="60" y1="56" x2="60" y2="105" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 手臂放在前方（打字） -->
+  <line x1="60" y1="72" x2="40" y2="85" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="72" x2="80" y2="85" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 屏幕 -->
+  <rect x="35" y="86" width="50" height="30" rx="2" stroke="#27AE60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="55" y1="116" x2="65" y2="116" stroke="#27AE60" stroke-width="2" stroke-linecap="round"/>
+  <line x1="60" y1="116" x2="60" y2="122" stroke="#27AE60" stroke-width="2" stroke-linecap="round"/>
+  <!-- 虚线屏障圆圈 -->
+  <circle cx="60" cy="75" r="50" stroke="#27AE60" stroke-width="1.5" stroke-dasharray="5 4" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="60" y1="105" x2="48" y2="148" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="105" x2="72" y2="148" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 7. CBSD — ChatGPT — 张嘴演讲+头顶光环 -->
+<svg data-type="CBSD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 光环 -->
+  <ellipse cx="60" cy="12" rx="16" ry="5" stroke="#9B59B6" stroke-width="2" stroke-linecap="round"/>
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛（自信） -->
+  <circle cx="53" cy="32" r="2.5" fill="#9B59B6"/>
+  <circle cx="67" cy="32" r="2.5" fill="#9B59B6"/>
+  <!-- 张嘴 -->
+  <ellipse cx="60" cy="44" rx="5" ry="4" stroke="#9B59B6" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="105" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右手举起演讲 -->
+  <line x1="60" y1="68" x2="90" y2="48" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="90" y1="48" x2="95" y2="38" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 手掌张开 -->
+  <line x1="95" y1="38" x2="92" y2="32" stroke="#9B59B6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="95" y1="38" x2="97" y2="31" stroke="#9B59B6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="95" y1="38" x2="101" y2="34" stroke="#9B59B6" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 左手自然 -->
+  <line x1="60" y1="68" x2="35" y2="88" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="60" y1="105" x2="45" y2="148" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="105" x2="75" y2="148" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 光环淡色填充 -->
+  <ellipse cx="60" cy="12" rx="12" ry="3" fill="#F5EEF8" stroke="none"/>
+</svg>
+
+<!-- 8. CBSH — while(true) — 6只手臂+各种道具 -->
+<svg data-type="CBSH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛（忙碌的转圈眼） -->
+  <circle cx="54" cy="33" r="3" stroke="#2C3E50" stroke-width="1.5"/>
+  <circle cx="54" cy="33" r="1" fill="#2C3E50"/>
+  <circle cx="66" cy="33" r="3" stroke="#2C3E50" stroke-width="1.5"/>
+  <circle cx="66" cy="33" r="1" fill="#2C3E50"/>
+  <!-- 嘴巴 -->
+  <line x1="55" y1="43" x2="65" y2="43" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="108" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左侧3只手臂 -->
+  <!-- 手臂1：手机 -->
+  <line x1="60" y1="62" x2="20" y2="50" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <rect x="10" y="44" width="10" height="16" rx="2" stroke="#2C3E50" stroke-width="1.5"/>
+  <!-- 手臂2：杯子 -->
+  <line x1="60" y1="74" x2="18" y2="74" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <path d="M8 68 L8 82 L18 82 L18 68" stroke="#2C3E50" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M18 72 Q24 72 24 77 Q24 82 18 82" stroke="#2C3E50" stroke-width="1" stroke-linecap="round"/>
+  <!-- 手臂3：笔 -->
+  <line x1="60" y1="86" x2="22" y2="98" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="102" x2="22" y2="98" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="102" x2="10" y2="104" stroke="#2C3E50" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 右侧3只手臂 -->
+  <!-- 手臂4：键盘 -->
+  <line x1="60" y1="62" x2="100" y2="50" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <rect x="95" y="44" width="18" height="10" rx="1" stroke="#2C3E50" stroke-width="1.5"/>
+  <!-- 手臂5：文件 -->
+  <line x1="60" y1="74" x2="102" y2="74" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <rect x="100" y="66" width="12" height="16" stroke="#2C3E50" stroke-width="1.5"/>
+  <line x1="103" y1="71" x2="109" y2="71" stroke="#2C3E50" stroke-width="1"/>
+  <line x1="103" y1="75" x2="109" y2="75" stroke="#2C3E50" stroke-width="1"/>
+  <!-- 手臂6：鼠标 -->
+  <line x1="60" y1="86" x2="98" y2="98" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="105" cy="100" rx="6" ry="8" stroke="#2C3E50" stroke-width="1.5"/>
+  <line x1="105" y1="94" x2="105" y2="98" stroke="#2C3E50" stroke-width="1"/>
+  <!-- 腿 -->
+  <line x1="60" y1="108" x2="48" y2="148" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="108" x2="72" y2="148" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 9. MRUD — 404 Not Found — 虚线半透明+翘二郎腿+手机 -->
+<svg data-type="MRUD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头（虚线） -->
+  <circle cx="60" cy="35" r="18" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- -_- 表情 -->
+  <line x1="50" y1="33" x2="56" y2="33" stroke="#BDC3C7" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="64" y1="33" x2="70" y2="33" stroke="#BDC3C7" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="56" y1="42" x2="64" y2="42" stroke="#BDC3C7" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体（虚线） -->
+  <line x1="60" y1="53" x2="60" y2="100" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <!-- 左手拿手机 -->
+  <line x1="60" y1="68" x2="82" y2="60" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <rect x="82" y="52" width="10" height="18" rx="2" stroke="#BDC3C7" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <!-- 右手自然 -->
+  <line x1="60" y1="68" x2="38" y2="85" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <!-- 坐姿翘二郎腿 -->
+  <line x1="60" y1="100" x2="45" y2="120" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <line x1="45" y1="120" x2="38" y2="148" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <!-- 翘起的腿 -->
+  <line x1="60" y1="100" x2="78" y2="112" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <line x1="78" y1="112" x2="65" y2="118" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <line x1="65" y1="118" x2="60" y2="148" stroke="#BDC3C7" stroke-width="2.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <!-- 椅子轮廓（虚线） -->
+  <line x1="40" y1="100" x2="80" y2="100" stroke="#BDC3C7" stroke-width="1.5" stroke-dasharray="3 2" stroke-linecap="round"/>
+  <line x1="80" y1="70" x2="80" y2="100" stroke="#BDC3C7" stroke-width="1.5" stroke-dasharray="3 2" stroke-linecap="round"/>
+</svg>
+
+<!-- 10. MRUH — dual-boot — 左右分裂+虚线分界 -->
+<svg data-type="MRUH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 中间虚线分界（贯穿全身） -->
+  <line x1="60" y1="10" x2="60" y2="155" stroke="#7F8C8D" stroke-width="1" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <!-- 左眼 -->
+  <circle cx="52" cy="33" r="2" fill="#1ABC9C"/>
+  <!-- 右眼 -->
+  <circle cx="68" cy="33" r="2" fill="#E67E22"/>
+  <!-- 嘴巴 -->
+  <line x1="54" y1="43" x2="66" y2="43" stroke="#7F8C8D" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="105" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左半西装（领带+领口） -->
+  <line x1="60" y1="53" x2="45" y2="72" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="55" x2="58" y2="80" stroke="#1ABC9C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="56" y1="62" x2="58" y2="68" stroke="#1ABC9C" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 右半T恤（简单肩线） -->
+  <line x1="60" y1="53" x2="75" y2="65" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="75" y1="65" x2="75" y2="80" stroke="#E67E22" stroke-width="2" stroke-linecap="round"/>
+  <!-- 左手臂 -->
+  <line x1="45" y1="72" x2="30" y2="90" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右手臂 -->
+  <line x1="75" y1="65" x2="92" y2="85" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左腿 -->
+  <line x1="60" y1="105" x2="44" y2="148" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右腿 -->
+  <line x1="60" y1="105" x2="76" y2="148" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左鞋（正式） -->
+  <line x1="44" y1="148" x2="36" y2="148" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右鞋（休闲） -->
+  <line x1="76" y1="148" x2="84" y2="148" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 11. MRSD — ping -t — 扩音器+脚下波纹+走路 -->
+<svg data-type="MRSD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛 -->
+  <circle cx="54" cy="33" r="2" fill="#1ABC9C"/>
+  <circle cx="66" cy="33" r="2" fill="#1ABC9C"/>
+  <!-- 嘴巴（喊叫） -->
+  <ellipse cx="60" cy="44" rx="4" ry="3" stroke="#1ABC9C" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体（走路微倾） -->
+  <line x1="60" y1="53" x2="58" y2="105" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右手举扩音器 -->
+  <line x1="58" y1="68" x2="88" y2="55" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 扩音器（三角+手柄） -->
+  <line x1="88" y1="55" x2="92" y2="52" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M92 44 L108 36 L108 60 L92 52 Z" stroke="#1ABC9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#E8F8F5"/>
+  <rect x="88" y="47" width="4" height="10" stroke="#1ABC9C" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 左手摆动 -->
+  <line x1="58" y1="68" x2="30" y2="80" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 走路腿 -->
+  <line x1="58" y1="105" x2="40" y2="132" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="40" y1="132" x2="35" y2="145" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="58" y1="105" x2="75" y2="130" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="75" y1="130" x2="80" y2="145" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 脚下同心圆弧波纹 -->
+  <path d="M30 152 Q58 142 85 152" stroke="#1ABC9C" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M22 156 Q58 144 95 156" stroke="#1ABC9C" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M15 160 Q58 146 105 160" stroke="#1ABC9C" stroke-width="1" stroke-linecap="round" fill="none"/>
+</svg>
+
+<!-- 12. MRSH — VPN — 戴帽子+背包+门框 -->
+<svg data-type="MRSH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 门框 -->
+  <line x1="30" y1="8" x2="30" y2="155" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="90" y1="8" x2="90" y2="155" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="30" y1="8" x2="90" y2="8" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 头 -->
+  <circle cx="60" cy="38" r="16" stroke="#16A085" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 帽子（头顶半圆） -->
+  <path d="M44 34 Q44 18 60 18 Q76 18 76 34" stroke="#16A085" stroke-width="2.5" stroke-linecap="round" fill="#E8F6F3"/>
+  <line x1="40" y1="34" x2="80" y2="34" stroke="#16A085" stroke-width="2" stroke-linecap="round"/>
+  <!-- 眼睛 -->
+  <circle cx="54" cy="38" r="2" fill="#16A085"/>
+  <circle cx="66" cy="38" r="2" fill="#16A085"/>
+  <!-- 嘴巴 -->
+  <path d="M55 46 Q60 49 65 46" stroke="#16A085" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 身体 -->
+  <line x1="60" y1="54" x2="60" y2="108" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 背包（背后方形） -->
+  <rect x="66" y="55" width="16" height="22" rx="3" stroke="#16A085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#E8F6F3"/>
+  <line x1="70" y1="55" x2="70" y2="50" stroke="#16A085" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="78" y1="55" x2="78" y2="50" stroke="#16A085" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 手臂 -->
+  <line x1="60" y1="68" x2="40" y2="85" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="68" x2="76" y2="80" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 左脚在门内 -->
+  <line x1="60" y1="108" x2="48" y2="140" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="48" y1="140" x2="42" y2="152" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 右脚在门外（跨过门框） -->
+  <line x1="60" y1="108" x2="78" y2="135" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="78" y1="135" x2="86" y2="152" stroke="#16A085" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 13. MBUD — /dev/null — 平躺+头顶云朵 -->
+<svg data-type="MBUD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 云朵（3个半圆） -->
+  <path d="M20 45 Q20 35 30 35 Q32 25 42 28 Q48 22 55 28 Q60 24 65 30 Q72 26 72 35 Q80 35 80 45" stroke="#F5B7B1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#FDEDEC"/>
+  <line x1="20" y1="45" x2="80" y2="45" stroke="#F5B7B1" stroke-width="2" stroke-linecap="round"/>
+  <!-- 平躺的人（水平姿态） -->
+  <!-- 头 -->
+  <circle cx="22" cy="90" r="14" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 闭眼 -->
+  <line x1="16" y1="88" x2="21" y2="88" stroke="#F5B7B1" stroke-width="2" stroke-linecap="round"/>
+  <line x1="24" y1="88" x2="29" y2="88" stroke="#F5B7B1" stroke-width="2" stroke-linecap="round"/>
+  <!-- 嘴巴（平静） -->
+  <line x1="19" y1="95" x2="25" y2="95" stroke="#F5B7B1" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- 身体（水平） -->
+  <line x1="36" y1="90" x2="85" y2="90" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 双手放身体两侧 -->
+  <line x1="50" y1="90" x2="50" y2="102" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="65" y1="90" x2="65" y2="102" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿（水平延伸） -->
+  <line x1="85" y1="90" x2="85" y2="95" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="85" y1="95" x2="105" y2="95" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="85" y1="90" x2="85" y2="85" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="85" y1="85" x2="105" y2="85" stroke="#F5B7B1" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 地面线 -->
+  <line x1="5" y1="110" x2="115" y2="110" stroke="#F5B7B1" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="6 3"/>
+</svg>
+
+<!-- 14. MBUH — sudo su — 虚线皇冠+普通衣服 -->
+<svg data-type="MBUH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 虚线皇冠 -->
+  <path d="M42 18 L42 6 L50 14 L60 2 L70 14 L78 6 L78 18 Z" stroke="#D4AC0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 2" fill="none"/>
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛（平静） -->
+  <circle cx="54" cy="33" r="2" fill="#7F8C8D"/>
+  <circle cx="66" cy="33" r="2" fill="#7F8C8D"/>
+  <!-- 嘴巴 -->
+  <line x1="55" y1="43" x2="65" y2="43" stroke="#7F8C8D" stroke-width="2" stroke-linecap="round"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="108" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- T恤肩线 -->
+  <line x1="60" y1="56" x2="42" y2="64" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="56" x2="78" y2="64" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 手臂自然下垂 -->
+  <line x1="42" y1="64" x2="35" y2="92" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="78" y1="64" x2="85" y2="92" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="60" y1="108" x2="48" y2="148" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="108" x2="72" y2="148" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 脚 -->
+  <line x1="48" y1="148" x2="40" y2="148" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="72" y1="148" x2="80" y2="148" stroke="#7F8C8D" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 15. MBSD — Hello World — V字手臂+大笑+音符 -->
+<svg data-type="MBSD" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 头 -->
+  <circle cx="60" cy="35" r="18" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛（开心弯弯眼） -->
+  <path d="M50 31 Q53 28 56 31" stroke="#F39C12" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M64 31 Q67 28 70 31" stroke="#F39C12" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 大笑嘴巴 -->
+  <path d="M50 42 Q60 52 70 42" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- 身体 -->
+  <line x1="60" y1="53" x2="60" y2="108" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- V字手臂向上（欢呼） -->
+  <line x1="60" y1="65" x2="30" y2="35" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="65" x2="90" y2="35" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 手掌 -->
+  <circle cx="28" cy="33" r="3" stroke="#F39C12" stroke-width="1.5"/>
+  <circle cx="92" cy="33" r="3" stroke="#F39C12" stroke-width="1.5"/>
+  <!-- 音符1 -->
+  <circle cx="18" cy="55" r="3" fill="#F39C12"/>
+  <line x1="21" y1="55" x2="21" y2="42" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M21 42 Q26 40 26 44" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 音符2 -->
+  <circle cx="100" cy="52" r="3" fill="#F39C12"/>
+  <line x1="103" y1="52" x2="103" y2="38" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M103 38 Q108 36 108 40" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 音符3 -->
+  <circle cx="14" cy="78" r="2.5" fill="#F39C12"/>
+  <line x1="16.5" y1="78" x2="16.5" y2="66" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M16.5 66 Q21 64 21 68" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 音符4 -->
+  <circle cx="106" cy="72" r="2.5" fill="#F39C12"/>
+  <line x1="108.5" y1="72" x2="108.5" y2="60" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M108.5 60 Q113 58 113 62" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 腿 -->
+  <line x1="60" y1="108" x2="45" y2="148" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="60" y1="108" x2="75" y2="148" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+<!-- 16. MBSH — Ctrl+C Ctrl+V — 实线本体+虚线分身 -->
+<svg data-type="MBSH" width="120" height="160" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- === 实线本体（左侧） === -->
+  <!-- 头 -->
+  <circle cx="48" cy="40" r="16" stroke="#8E44AD" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 眼睛 -->
+  <circle cx="43" cy="38" r="2" fill="#8E44AD"/>
+  <circle cx="53" cy="38" r="2" fill="#8E44AD"/>
+  <!-- 嘴巴 -->
+  <path d="M43 46 Q48 50 53 46" stroke="#8E44AD" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- 身体 -->
+  <line x1="48" y1="56" x2="48" y2="108" stroke="#8E44AD" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 手臂 -->
+  <line x1="48" y1="70" x2="30" y2="88" stroke="#8E44AD" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="48" y1="70" x2="62" y2="88" stroke="#8E44AD" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 腿 -->
+  <line x1="48" y1="108" x2="38" y2="148" stroke="#8E44AD" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="48" y1="108" x2="58" y2="148" stroke="#8E44AD" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- === 虚线分身（右上偏移） === -->
+  <!-- 头 -->
+  <circle cx="78" cy="30" r="16" stroke="#8E44AD" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+  <!-- 眼睛 -->
+  <circle cx="73" cy="28" r="2" fill="#8E44AD" opacity="0.4"/>
+  <circle cx="83" cy="28" r="2" fill="#8E44AD" opacity="0.4"/>
+  <!-- 嘴巴 -->
+  <path d="M73 36 Q78 40 83 36" stroke="#8E44AD" stroke-width="1.5" stroke-dasharray="3 2" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <!-- 身体 -->
+  <line x1="78" y1="46" x2="78" y2="98" stroke="#8E44AD" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round" opacity="0.5"/>
+  <!-- 手臂 -->
+  <line x1="78" y1="60" x2="60" y2="78" stroke="#8E44AD" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round" opacity="0.5"/>
+  <line x1="78" y1="60" x2="92" y2="78" stroke="#8E44AD" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round" opacity="0.5"/>
+  <!-- 腿 -->
+  <line x1="78" y1="98" x2="68" y2="138" stroke="#8E44AD" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round" opacity="0.5"/>
+  <line x1="78" y1="98" x2="88" y2="138" stroke="#8E44AD" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round" opacity="0.5"/>
+</svg>
+  </div>
+
+  <script>
+// ═══════════════════════════════════════════════════════════
+//  part_data.js — 纯数据文件，32 道题目 + 16 种人格结果
+//  不包含任何 DOM 操作或交互逻辑
+// ═══════════════════════════════════════════════════════════
+
+// ═══ 题目数据 ═══
+const QUESTIONS = [
+  // ── 第1组：C(卷) vs M(摸)  Q1-Q8 ──
+  { q: '周五晚上11点，你的IDE状态是？', opts: ['IDE是啥？我只认识爱奇艺', '两小时前就关了，现在躺床上刷沙雕视频', '还开着，顺手重构了两个函数再睡', '正在写第三个PR，顺便帮隔壁组修了个bug'] },
+  { q: '同事用Cursor/Copilot一小时写完了你两天的活，你？', opts: ['太好了，以后摸鱼时间更多了', '也装了一个，让AI写代码我负责摸鱼', '研究了一晚上Prompt Engineering想超过他', '我已经用AI Agent搭了一套自动化工作流了'] },
+  { q: '领导在群里@所有人"今晚必须上线"，你？', opts: ['手机调飞行模式，明早装作没看到', '回个"收到"然后打开外卖APP犒劳自己', '叹口气开始干活，边骂边写', '两小时前就部署好了，正在写复盘文档'] },
+  { q: '你的Git提交时间分布长啥样？', opts: ['全在工作日10点到5点，精准卡点上下班', '偶尔有个晚8点的记录，那是白天摸多了还债', '凌晨2点的commit不少，但我不承认是在卷', '7x24均匀分布，CI/CD都觉得我是个机器人'] },
+  { q: '领导说"用AI重写这个系统"，你？', opts: ['太好了，AI写完我直接躺', '让ChatGPT生成个方案交差', '评估了三个大模型选了最合适的落地', '连夜搭了个RAG+Agent的Demo第二天早会就演示了'] },
+  { q: '午休时间你一般在干嘛？', opts: ['12点冲食堂，1点半前绝不回工位', '眼罩一戴椅子一放平，叫魂都叫不醒', '边吃边刷技术博客，假装自己很上进', '什么午休？我午饭都是对着监控面板吃的'] },
+  { q: '年度晋升答辩你准备了多久？', opts: ['晋升？别3.25就烧高香了', '前一天晚上现编PPT，截图都是临时找的', '提前两周把项目包装了一番还rehearse了', '半年前就开始埋数据，每个季度都有增长曲线'] },
+  { q: '你电脑上装了几个AI编程工具？', opts: ['0个，我连ChatGPT都懒得注册', '装了Copilot偶尔用用，主要还是自己写', 'Cursor+Copilot+Claude Code全副武装', 'AI工具不够用，我还自己微调了个代码模型'] },
+
+  // ── 第2组：R(润) vs B(苟)  Q9-Q16 ──
+  { q: '猎头给你发"在看机会吗"，你？', opts: ['都不用看JD，直接回"随时on call"', '认真看完薪资范围后秒发了份最新简历', '有一搭没一搭聊着，就当了解行情了', '"谢谢关注，暂不考虑"，然后把人删了'] },
+  { q: '组里空降了个比你年轻五岁但title比你高的人？', opts: ['简历当天更新，三天后开始请"病假"面试', '默默打开Boss直聘看了看自己的市场价', '心里酸了一下但很快继续搬砖了', '主动找人家请教学习，多个大腿多条路'] },
+  { q: '遇到bug你第一反应是？', opts: ['先问ChatGPT/Claude，AI秒解决', '扔给AI看看，不行再自己翻文档', '先自己分析调用链，实在不行再搜', '脑内已经定位到是哪行代码了，直接改'] },
+  { q: '听说隔壁组HC全部冻结了，你？', opts: ['危险信号！当晚就启动了Plan B', '悄悄投了两家试试水温，骑驴找马', '有点慌但觉得自己业务线还算安全', '稳如老狗，我这块业务缺了我转不了'] },
+  { q: '你手机上装了几个招聘APP？', opts: ['Boss脉脉拉勾猎聘领英，一个都不能少', '装了俩但简历状态一直是"在看机会"', '以前装过后来卸了，太焦虑了', '从来没装过，有需要让朋友内推就行'] },
+  { q: '年终奖到账的第二天，你？', opts: ['简历已投出三十封，年终是最后的体面', '开始认真考虑下一步了，该走就走', '数了数钱觉得还行，继续苟着吧', '感恩公司培养，干劲比年前更足了'] },
+  { q: '"AI要取代程序员"的新闻又刷屏了，你？', opts: ['终于可以不用写代码了，解放！', '有点慌，默默去学了下Prompt Engineering', '不慌，AI替代的是初级工作，我负责架构设计', '笑了，昨天刚用AI帮我十倍提效，取代的是不会用AI的人'] },
+  { q: '公司突然宣布全员降薪15%，你？', opts: ['当天就把简历设成"离职-随时到岗"', '先忍忍，但已经开始骑驴找马了', '虽然肉疼但能理解，共渡难关嘛', '主动跟领导表态"我这边没问题"'] },
+
+  // ── 第3组：U(独狼) vs S(社牛)  Q17-Q24 ──
+  { q: '需求评审会上产品经理画了个巨饼，你？', opts: ['全程静音假装网卡，散会后看文档就行', '被@了才开麦说一句"我这边没问题"', '指出三个技术风险并给了替代方案', '化身产品经理本体，比PM还能讲用户场景'] },
+  { q: '团建通知发下来了，你的第一反应？', opts: ['打开请假系统，我奶奶又要"住院"了', '人去了但全程戴耳机当透明人', '跟几个熟人组队还挺开心的', '我来当主持人吧！游戏环节我都设计好了'] },
+  { q: '食堂排队遇到不太熟的同事，你？', opts: ['瞬间低头看手机假装在处理紧急bug', '点头微笑然后默念"千万别跟我说话"', '聊两句食堂今天啥菜好吃', '从工作聊到房价，打完饭了还意犹未尽'] },
+  { q: 'Code Review发现同事的代码90%是AI生成的，你？', opts: ['大家不都是AI写的吗？有啥好说的', '心里默默吐槽但打了个LGTM', '留了几条comment指出AI生成的典型问题', '当场拉会分享了"如何正确使用AI辅助编程"'] },
+  { q: '公司搞技术分享日，你？', opts: ['听说不强制签到？那我就不去了', '坐最后一排戴耳机全程神游', '准备了个话题上去讲了二十分钟', '讲完还现场Q&A半小时，散场加了八个微信'] },
+  { q: '工作群里有人问"这个用AI能实现吗"，你？', opts: ['看见了但假装没看见，多一事不如少一事', '甩了个ChatGPT链接：你自己问它吧', '简短回了下哪些场景适合用AI哪些不适合', '写了一大段RAG+Agent+微调的方案对比，还附了Demo'] },
+  { q: '你的企微/钉钉头像和签名是？', opts: ['系统默认头像，签名为空，查无此人', '随便选了张风景图，签名是"。"', '正经证件照加职级信息', '定期更新，签名是最新技术观点配上金句'] },
+  { q: '跨组协作要推动一个事情，你？', opts: ['发条消息等回复，没人理就当黄了', '写封邮件抄送几个人，仁至义尽', '主动拉群逐个@，对齐排期', '建了项目群拉了三次会还做了周报同步机制'] },
+
+  // ── 第4组：D(为自己) vs H(为公司)  Q25-Q32 ──
+  { q: '你写代码最嗨的时刻是？', opts: ['搞side project上线了有人付费的那一刻', '解决自己感兴趣的技术难题时', '公司核心业务上线后看着监控指标飙升', '年会上自己的项目被CTO点名表扬'] },
+  { q: '你深夜学新技术，学的是什么？', opts: ['LLM微调/Agent开发这种纯粹好玩的', '独立开发全栈+AI，为自己的产品做储备', '跟晋升评审直接相关的技术栈', '公司下季度要上的大模型项目，提前卷起来'] },
+  { q: '你的个人项目/服务器上跑着什么？', opts: ['自己的AI套壳产品，已经有付费用户了', '各种开源模型和技术博客', '公司项目的测试环境，方便自己调试', '个人项目？每天给公司写代码哪有空搞'] },
+  { q: '关于写周报这件事？', opts: ['把真正的产出藏起来，公司部分能水就水', '一半工作一半注水，给自己留充足摸鱼时间', '认真写，顺便向上管理展示价值', '每周五花两小时精雕细琢，确保领导看到亮点'] },
+  { q: '公司让你接手一个祖传系统，你？', opts: ['先让Claude/GPT读一遍代码帮我理清逻辑', '挑能写进简历的部分学，剩下的让AI维护', '认真重构当技术练兵场，顺便引入AI辅助', '全力维护！这是公司命脉，责无旁贷'] },
+  { q: '技术选型时你脑子里第一个念头？', opts: ['哪个对我简历最加分就选哪个', '哪个我最想学就选哪个', '综合评估后选最适合团队和项目的', '公司已有的技术栈优先，稳定压倒一切'] },
+  { q: '半夜三点线上报警了，你？', opts: ['手机常年静音，明早再说', '看了眼确认不是自己的服务，翻身继续睡', '爬起来修了，毕竟影响SLA绩效就完了', '秒起修复还写了篇复盘文档发到全组群里'] },
+  { q: '如果公司给你三个月带薪假，你？', opts: ['全职搞自己的独立产品，争取上线赚钱', '学点跟公司完全无关的技术，给自己充电', '休息一阵后提前回来帮团队赶项目', '不需要假期，手上的项目正到关键节点离不开我'] }
+];
+
+// ═══ 维度名称数据 ═══
+const DIMENSIONS = [
+  { left: '摸', right: '卷', leftCode: 'M', rightCode: 'C' },
+  { left: '润', right: '苟', leftCode: 'R', rightCode: 'B' },
+  { left: '独', right: '社', leftCode: 'U', rightCode: 'S' },
+  { left: '自己', right: '公司', leftCode: 'D', rightCode: 'H' }
+];
+
+// ═══ 人格结果数据 ═══
+const PERSONALITIES = {
+  'CRUD': {
+    code: '996.ICU',
+    name: '简历保鲜达人',
+    desc: '996到进ICU——你就是这条路上最忠实的行者。白天疯狂写CRUD，晚上疯狂刷Boss直聘，你的简历永远是最新版本，你的leetcode永远停在第3题，你的\u201c算法训练营\u201d课程购买了17个但完成了0个。你在工位上精通alt+tab，左屏IDE右屏拉勾，浏览器永远有一个tab停在\u201c程序员转行指南\u201d。周一在组会上信誓旦旦说要\u201c深入学习\u201d，周三已经在小红书搜\u201c28岁转行来得及吗\u201d。每次绩效沟通完你都热血沸腾想跳槽，打开Boss直聘投了二十家，然后在\u201c期望薪资\u201d那一栏纠结了四十分钟最终关掉了App。你和leader的关系很微妙——他知道你在划水，你知道他知道，但你们都默契地不点破，因为他也招不到人。你的内心独白是\u201c这破公司配不上我\u201d，但你面试的时候连HashMap的扩容机制都说不清，项目经历一问深就开始编。你每个月都想裸辞，但看到房贷和信用卡账单就怂了。你的同事都以为你很忙因为你总在噼里啪啦打字，其实你在Boss上跟猎头battle薪资。你就是那种永远在\u201c准备跳槽\u201d但永远没跳的人——说白了，你不是找不到更好的机会，你是找不到一个摸鱼环境比现在还好的机会。',
+    bestMatch: { code: 'MRUD', label: '404 Not Found', why: '都在摸鱼，但你至少还刷Boss直聘' },
+    worstMatch: { code: 'CBSH', label: 'while(true)', why: '他的存在让你的摸鱼显得特别扎眼' }
+  },
+
+  'CRUH': {
+    code: 'git push -f',
+    name: '用力过猛的焦虑收藏家',
+    desc: '就像force push一样，你做什么都用蛮力，还不打招呼。你是那种一边在群里骂公司SB一边提交PR到凌晨两点的矛盾体。你的GitHub contribution图比你的社交记录丰富得多，你的收藏夹里躺着300篇\u201c系统设计面试指南\u201d和47个\u201c从零搭建xxx\u201d教程。你疯狂刷题、看源码、写side project，但这一切的底层驱动力是深入骨髓的不安全感。每次公司传出裁员消息你就开始失眠，连夜把简历又润色一遍。你同时在准备三家公司的面试，而且每一家的系统设计方案都不一样——字节版强调高并发，阿里版强调中台化，腾讯版强调稳定性，你比产品经理还懂因人制宜。你和leader的关系是典型的\u201c又爱又恨\u201d：他给你打3.5你觉得自己值3.75，他说\u201c再看看\u201d你听成\u201c准备优化你\u201d。你的oncall记录全组最多，不是因为你负责任，是因为你怕错过任何一个证明自己的机会。你的内心独白是\u201c我随时能走\u201d，但你的行动是把每个项目都当成面试素材在打磨。你焦虑到开始掉头发，于是在购物车里加了三瓶防脱洗发水——这也加剧了你的焦虑。最讽刺的是，你最终可能哪也不去，因为你太忙了根本没时间面试。你不是在写代码，你是在写保险——给自己随时失业的保险。',
+    bestMatch: { code: 'MRUH', label: 'dual-boot', why: '你俩都在疯狂build，只是动机不同' },
+    worstMatch: { code: 'MBUD', label: '/dev/null', why: '你输出的全部焦虑在他那里全被吞掉了' }
+  },
+
+  'CRSD': {
+    code: 'README.md',
+    name: 'PPT写得比代码好的人才',
+    desc: 'README写得比代码好看——这就是你，互联网时代的文艺复兴人。你的技术方案文档排版精美、图文并茂，甚至还有动图演示，看得评审的人以为你做了多大的事，点进代码一看——就改了三行if-else。你认识每个部门的人，知道谁要走、哪个组HC多、哪个领导要凉、谁和谁吃过饭、哪个总监的PPT是下属代写的。你在团队里扮演积极上进的角色，OKR写得跟公司战略似的，但O1就是\u201c找到下一份工作\u201d。你写的代码一般般，但你的周报堪称文学作品，leader每次看你的周报都觉得你是全组最忙的人。你最擅长的技能是在述职PPT里把\u201c协助同事fix了一个bug\u201d写成\u201c主导推进了核心系统稳定性治理专项\u201d。你跟领导的关系维护得很好——每次leader发朋友圈你都是第一个点赞的，但你真正的leader其实是Boss直聘上给你发消息的HR。你的内心独白很清醒：这里就是个跳板，我的KPI就是让简历好看。技术评审上你从不challenge别人，因为你知道得罪人比写烂代码后果更严重。真让你996你第一个跑路，但让你写一篇\u201c我为什么热爱这个团队\u201d你能写出三千字催人泪下的小作文——你不是程序员，你是被代码耽误的自媒体人。',
+    bestMatch: { code: 'MRSD', label: 'ping -t', why: '社交达人联盟，你俩能垄断全公司的八卦' },
+    worstMatch: { code: 'CBUH', label: 'localhost:3000', why: '他用实力打你的脸，因为他什么都不说但代码比你好十倍' }
+  },
+
+  'CRSH': {
+    code: 'sudo rm -rf /',
+    name: '公司花大价钱养的临时工',
+    desc: '你走了之后，整个项目跟被rm -rf了一样——行业里最危险的物种。你又能卷又能社交，技术好还会表达，关键是你还随时准备跑路。你是猎头最爱的那种人：拿得出手的项目、说得出口的成果、忍不了的现状。你在每家公司都是明星员工，owner了核心模块，主导了技术选型，述职PPT让总监连连点头——然后你在最关键的时候提了离职。HR找你做留人谈话，开出加薪20%，你微微一笑说\u201c不是钱的问题\u201d，其实就是钱的问题，只不过对面给的更多。你的leader对你又爱又恨：爱你的产出，恨你的不可控。每次你请假他都心惊肉跳，生怕你是去面试。你的同事更纠结——你在的时候大家压力山大因为你太能干，你走了之后大家压力山大因为要接你的盘。你在公司的平均寿命是十八个月，刚好够你从\u201c还不错\u201d干到\u201c我受够了\u201d。你的内心独白是\u201c我不是不忠诚，我只是太清醒\u201d——你知道在这个行业，忠诚换来的是\u201c老员工倒挂\u201d和\u201c感谢你的付出\u201d，跳槽换来的是涨薪40%和新的Title。你不是在跳槽，你是在做职业生涯的滚动式投资——只不过每次离场时，留下的人都想对你说一句：祝你下家也遇到一个突然跑路的核心开发。',
+    bestMatch: { code: 'MRSH', label: 'VPN', why: '你俩都是公司最亏本的投资' },
+    worstMatch: { code: 'CBUD', label: 'sleep(MAX_INT)', why: '你来来走走，他岿然不动，讽刺的是他可能比你待得久' }
+  },
+
+  'CBUD': {
+    code: 'sleep(MAX_INT)',
+    name: '占着茅坑的艺术家',
+    desc: '你把自己挂起来了，等待一个永远不会来的信号量。你找到了大厂生存的最优解：做到刚好不被kill -9的程度，然后苟住。你的代码不出bug是因为你根本不写复杂逻辑，所有需求到你手里都变成了\u201c改个配置\u201d和\u201c加个字段\u201d。产品经理给你提需求你永远说\u201c要评估一下\u201d，评估结果永远是\u201c这个排期比较紧，得下个迭代\u201d。你从不主动接活，但分配给你的也能按时交——虽然代码质量约等于能跑就行。技术评审你永远坐在角落玩手机，被点名发言就说\u201c我觉得挺好的，没什么问题\u201d。你和leader的关系很省心——他知道你不会搞砸，你知道他不会重用你，双方达成了一种奇妙的默契。年终绩效永远3.5，不高不低，你甚至把这当成一种技能：精准卡在不被谈话也不被表扬的甜蜜区间。你的内心独白是\u201c公司给多少钱我就干多少活\u201d，你的OKR是组里最后一个填的，而且都是从去年的复制过来改了个日期。同事聚餐你每次都参加但从不组织，团建你永远选最轻松的项目。你不焦虑35岁，因为你觉得自己25岁就已经活成了35岁的状态——你不是在养老，你是在用最低功耗运行人生，像一台永远不会过热的服务器，也永远不会有人记得你的hostname。',
+    bestMatch: { code: 'MBUD', label: '/dev/null', why: '你俩是大厂最低能耗的双人组' },
+    worstMatch: { code: 'CBSH', label: 'while(true)', why: '他的存在是对你人生哲学的暴击' }
+  },
+
+  'CBUH': {
+    code: 'localhost:3000',
+    name: '年终述职最大冤种',
+    desc: '只在自己机器上发光发热，从不对外暴露端口——你是全组最不起眼但最不能走的人。你不发言、不社交、不写周报，每周的站会你能用十五个字概括完所有工作。但你的代码写得比谁都好，review别人的PR比leader还仔细，而且你永远不会在群里指出来，只是默默改掉然后commit。你对技术有真正的热情，只是完全不想跟人打交道。你的commit message永远是\u201cfix bug\u201d或\u201cupdate\u201d，但每次都精准修复了核心问题。产品经理找你聊需求你全程面无表情，但转头就给出了最优方案。你的leader常常忘记你的存在，直到你请假那天整个系统开始报警，全组六个人查了一下午才发现你平时默默维护着七个核心服务。你是年终述职时最大的冤种——你干的活全被别人写进了他们的PPT里。那个同事汇报的\u201c稳定性提升40%\u201d是你半夜起来修的，那个leader邀功的\u201c架构升级项目\u201d核心代码是你写的。你和领导的关系就像影子和主人——他站在聚光灯下，你的贡献只是他脚下的暗影。你的内心独白是\u201c我写代码是为了自己，不是为了给你看\u201d，但三年过去了，你的级别还是那个级别。别人劝你多表达多展示，你说\u201c技术说话\u201d，可惜在这个公司，PPT说话的声音永远比代码大。你就是那种被裁了全组才知道天塌了的人——你不是localhost，你是整个系统的127.0.0.1。',
+    bestMatch: { code: 'MBUH', label: 'sudo su', why: '两个扫地僧凑一桌，无声胜有声' },
+    worstMatch: { code: 'CBSD', label: 'ChatGPT', why: '他把你的功劳包装成自己的PPT素材' }
+  },
+
+  'CBSD': {
+    code: 'ChatGPT',
+    name: '精装向上管理师',
+    desc: '你的周报、方案、甚至团队分享全靠AI润色——你活成了人形prompt engineer。你是大厂政治的行家，精通向上管理的每一个毛孔。你知道什么时候该表现什么时候该低调，你知道leader喜欢听什么汇报、总监关注哪些指标、HR在all-hands上会问什么问题。你在老板面前侃侃而谈\u201c技术深度\u201d和\u201c业务理解\u201d，回到工位立刻打开淘宝看看双十一还有什么好买的。你的真正技能是精准拿捏\u201c刚好被看到\u201d的表演时机——leader经过你工位的时候你永远在debug，leader不在的时候你永远在刷手机。你从不加班，但每次老板加班你都恰好\u201c还有点东西没弄完\u201d。你的飞书状态永远是\u201c会议中\u201d，其实你只是在会议室里午睡。你发现了一个真理：干活干得好只能拿3.5，但干活干得好加上会说能拿3.75。于是你把50%的精力花在\u201c让别人知道你干得好\u201d上。你和真正干活的同事关系微妙——你需要他们产出数据让你写PPT，他们需要你去帮他们在leader面前挡需求。你的内心独白是\u201c职场不是做题，是做人\u201d。你的晋升速度确实比真正干活的人还快，因为你深谙一个道理：做得好不如说得好，说得好不如被看到，被看到不如被记住——而你，就是leader脑子里\u201c这个人不错\u201d的那个缓存，命中率高得可怕。',
+    bestMatch: { code: 'CRSD', label: 'README.md', why: '向上管理天团，联手可以忽悠整个公司' },
+    worstMatch: { code: 'MBUH', label: 'sudo su', why: '他不说话，但所有人都知道真正干活的是谁' }
+  },
+
+  'CBSH': {
+    code: 'while(true)',
+    name: '让同事血压升高的人',
+    desc: '陷入无限循环，没有break条件，也没有人敢给你写一个。你是让所有同事血压升高的存在。你不仅自己卷，还拉着全组一起卷——周五晚上十一点你在群里发技术方案让大家\u201c有空看看\u201d，周六早上你又发了三条消息问\u201c大家看了吗\u201d。你同时owner三个项目，每个群都在@你，你的飞书日历密得像俄罗斯方块，你甚至给自己的吃饭时间也建了一个会议叫\u201c午餐同步会\u201d。你的leader把你当成标杆员工，每次组会都说\u201c要向xxx学习\u201d，殊不知全组人在心里问候你全家。你觉得自己在\u201c做大事\u201d\u201c推动变革\u201d，其实你只是无法停下来。你用忙碌填补内心的空虚，用产出证明自己的价值，你的OKR完成率永远是全组第一，你的同事满意度永远是全组倒数。你跟同事的关系就是：他们在你面前不敢摸鱼，在你背后疯狂吐槽。有人因为你的存在选择了转组，有人因为跟你在一个项目开始吃安眠药。你的内心独白是\u201c我不卷谁卷\u201d\u201c这个团队没有我不行\u201d，但你没意识到大家不是佩服你，是怕你。如果有一天你突然不忙了，你大概率会焦虑到失眠——因为你已经忘了不工作的自己是谁了。你就是那种让HR头疼的人：绩效没法不给高分，但团队氛围全被你搞砸了。你不是while(true)，你是while(true) { 同事.血压++; }。',
+    bestMatch: { code: 'CRSH', label: 'sudo rm -rf /', why: '你俩是最强输出组合，可惜他随时会跑' },
+    worstMatch: { code: 'MBUD', label: '/dev/null', why: '你拼命输出，他全部吞掉' }
+  },
+
+  'MRUD': {
+    code: '404 Not Found',
+    name: '带薪冥想大师',
+    desc: '你的工作热情——404 Not Found，连缓存里都没有。你的身体在工位上，灵魂早在入职第三个月就交了离职信。你上班的唯一目的是等每月15号工资到账的那条短信通知，那是你一个月里唯一真心笑的时刻。你把摸鱼发展成了一门艺术——屏幕永远开着IDE，但你的VS Code其实三天没动过一行代码了，那个terminal里跑着的是你昨天启动后就没管过的dev server。你的真实工作流是：上午在即刻和V2EX看帖子、中午睡到两点、下午在微信上跟前同事吐槽现公司、四点半开始焦虑今天啥也没干、五点半假装收拾东西其实在等到点。每次站会轮到你发言，你都会说\u201c昨天在看那个问题，今天继续\u201d——这个\u201c那个问题\u201d你已经\u201c看\u201d了两周了。你和leader的关系是透明的：他知道你在摸鱼，你知道他知道，但他现在也没精力管你因为他自己也快被优化了。你的内心每周都在循环播放\u201c辞职吧\u201d\u201c算了再待待\u201d\u201c辞职吧\u201d\u201c下个月再说\u201d。你是那种让HR最头疼的人：不够差到能PIP你，不够好到值得培养你，不够贵到值得裁你拿赔偿。你的理想人生是中彩票然后环游世界，现实人生是等这个月的最后一个工作日。你不是404，你是整个服务都没启动——你已经stop了，只是没人发现罢了。',
+    bestMatch: { code: 'CBUD', label: 'sleep(MAX_INT)', why: '精神离职搭配带薪挂机，天作之合' },
+    worstMatch: { code: 'CBSH', label: 'while(true)', why: '他的存在时刻提醒你自己有多废' }
+  },
+
+  'MRUH': {
+    code: 'dual-boot',
+    name: '公司最亏本的买卖',
+    desc: '上班boot进摸鱼系统，下班切换到肝帝系统——互联网行业最拧巴的双重人格。你上班八小时贡献了大概四十分钟的有效工作，其中三十分钟是在改昨天的bug、十分钟是在回飞书消息。但下班后你突然变了一个人：写自己的开源项目、学Rust、搞WASM、甚至在GitHub上有几百个star。你对公司的CRUD业务毫无热情，但对自己感兴趣的东西可以连肝三天不洗头。你的leader觉得你能力一般态度一般，但他不知道你上个月在Hacker News首页待了一天。你上班时写的代码跟你下班时写的代码简直不像同一个人——前者是能跑就行，后者是优雅到每个变量名都是诗。你和同事的关系是表面融洽实际疏离：你觉得他们讨论的技术话题太低级，他们觉得你上班怎么老走神。你的内心独白是这破公司配不上我的才华，但你又不想跳槽因为这里摸鱼自由度高。你的离职计划大概是：等side project月收入过万就跑。然而三年了，你的side project月收入还是47块——全是GitHub Sponsors上三个哥们的同情打赏。公司花了大几十万年薪买了你每天四十分钟的有效工时，属于是全行业最亏本的买卖。你不是dual-boot，你是把公司当成了你个人项目的带薪孵化器。',
+    bestMatch: { code: 'CRUH', label: 'git push -f', why: '你俩都在疯狂build，只是他更焦虑' },
+    worstMatch: { code: 'CBSH', label: 'while(true)', why: '他在公司就能发光，你非得下班才行' }
+  },
+
+  'MRSD': {
+    code: 'ping -t',
+    name: '八卦中转站站长',
+    desc: '你就像持续ping命令，跟谁都能连通，但不传输任何有效数据包。你认识公司一半的人，但没人知道你具体干什么工作。你的工位经常是空的，因为你不是在茶水间聊天就是在别的楼层串门，偶尔出现在工位上也是在微信上跟人语音。你掌握的八卦比你写的代码多十倍——谁的leader要调走、哪个组要被合并、食堂哪个窗口新来的阿姨打菜手抖，你都门儿清。你是那种团建时最活跃、干活时最隐形的人，AA制聚餐你永远是组织者但从不多付一分钱。你跟各个组的人都能聊上几句，产品、设计、测试、运维，你在每个群里都有存在感，就是在代码仓库里没有。技术评审会上你总是最后一个发言而且永远说的是别人说过的话，但你的语气让人觉得这是你的原创观点。你的leader其实挺头疼你的：裁你吧你人缘太好影响不好，留你吧你确实不怎么干活。你随时准备跳槽，而且你的人脉网络保证你永远不缺内推——上个月你拿到了三个offer，都是聊天时候别人主动给你推的。你的内心独白是工作嘛开心最重要，代码嘛能跑就行。讽刺的是你这种人在职场往往混得不差——因为很多时候，会社交的人升职比会写代码的人快。你不是ping -t，你是整个公司的人形路由器，数据不处理但转发效率一流。',
+    bestMatch: { code: 'CRSD', label: 'README.md', why: '八卦双雄，信息网络全覆盖' },
+    worstMatch: { code: 'CBUH', label: 'localhost:3000', why: '他用沉默对抗你的喧嚣' }
+  },
+
+  'MRSH': {
+    code: 'VPN',
+    name: '公司出钱养的竞品创始人',
+    desc: '人在公司，心在墙外——你用公司的资源build自己的帝国。你是最清醒的打工人，也是公司最大的安全隐患。你很早就想明白了：给公司卖命不如经营自己。你上班的时间用来社交、攒资源、维护人脉、顺便把公司的技术架构学习借鉴到自己的项目里。你可能在运营一个技术公众号粉丝五万、一个付费社群年收入二十万、或者一个独立产品已经有了种子用户。你在公司只投入60%的精力，但就这60%也比大多数人的100%强，所以没人能说你什么。你的leader觉得你是个靠谱的人，不知道你每天下午三点到四点在公司会议室里跟你的合伙人开视频会。你的飞书签名是专注高效，你的真实座右铭是利用一切可利用的资源。你跟同事的关系维护得恰到好处——不远不近，有需要的时候能帮忙，但从不交心，因为他们都是你的潜在用户或者未来可能的合伙人。你的内心独白是这份工资就是我创业的天使轮，等我的产品跑通了我就是自己的CEO。你大概率会成功的，但你的前东家们回头看都会觉得自己养了一头白眼狼——不对，是一头很能干的白眼狼。你不是在摸鱼，你是在用公司的工牌当护身符，用公司的Wi-Fi部署自己的未来。',
+    bestMatch: { code: 'MBSH', label: 'Ctrl+C Ctrl+V', why: '都是用公司养活自己副业的人' },
+    worstMatch: { code: 'CBSH', label: 'while(true)', why: '他没有自己的生活，你觉得他很可悲' }
+  },
+
+  'MBUD': {
+    code: '/dev/null',
+    name: '部门吉祥物',
+    desc: '任何需求和压力传到你这里，全部被吞掉，没有任何输出，没有错误提示，甚至没有日志。恭喜你，你已经修炼到了打工人的最高境界：无欲无求。你不卷、不润、不社交、不肝，你已经和自己的平庸彻底和解了。你的KPI永远卡在及格线，你的技术栈停留在三年前，你的职业规划就是没有规划。产品经理给你提需求你说好的，然后用最简单的方式实现了一个勉强能用的版本。leader找你聊发展你说挺好的，然后继续保持原样。绩效沟通你说我会努力的，然后下个季度还是一样。你在组会上永远坐最后一排，发言永远是我没什么补充的。你的午餐时间永远准点开始准点结束，你的下班时间精确到分钟——你可能是全公司最准时的人，包括门口的保安。你跟同事的关系不好不坏，大家知道你存在但经常忘记你叫什么，团队合照里你永远站在最边上而且经常被裁切掉。你的内心不是没有波澜，只是波澜都被你吞掉了——就像你的代号/dev/null一样。但说实话，你可能是这16种人格里活得最通透的一个。当别人在焦虑内卷和35岁危机的时候，你已经在研究今晚是吃黄焖鸡还是麻辣烫了。你的存在意义是让HR的headcount凑个整数——你不是员工，你是公司的四舍五入误差。',
+    bestMatch: { code: 'CBUD', label: 'sleep(MAX_INT)', why: '大厂最低能耗双人组' },
+    worstMatch: { code: 'CBSH', label: 'while(true)', why: '你们俩是职场阴阳两极' }
+  },
+
+  'MBUH': {
+    code: 'sudo su',
+    name: '被绩效埋没的扫地僧',
+    desc: '看起来是普通用户，实际有root权限——你是最容易被误解的类型。表面上你是部门里最没存在感的人，开会不说话，周报敷衍到HR怀疑你是不是用了模板，从不参加团建，午餐永远一个人吃。但你的GitHub profile比大多数卷王都丰富，你给Linux内核提过patch，你的开源工具被几千人用着，你在某个技术社区是版主。你在公司摸鱼不是因为你不行，是因为你觉得公司的技术栈跟你玩的不在一个维度。同事讨论怎么优化一个SQL查询的时候你在心里已经把整个数据库架构重新设计了一遍，但你懒得说。你跟leader的关系很尴尬：他觉得你不积极不主动，你觉得他连基本的技术品味都没有。你的周报永远三行字，年终述职PPT是前一天晚上花半小时做的，别人准备了两周的精美动画你用纯文本就打发了。所以你年年拿3.25，你的leader还觉得给高了。你是那种被裁之后前同事刷到你的技术博客才发现原来他这么厉害的人——然后他们会在群里感慨一句可惜了，接着继续刷短视频。你的内心独白是我的价值不需要PPT来证明，但现实是不会做PPT的人在大厂就是原罪。你没有焦虑，因为你知道自己值多少钱——可惜你的leader不知道，HR更不知道，只有GitHub上那些给你点star的陌生人知道。',
+    bestMatch: { code: 'CBUH', label: 'localhost:3000', why: '两个扫地僧凑一桌，无声胜有声' },
+    worstMatch: { code: 'CBSD', label: 'ChatGPT', why: '他用嘴就能抢走你的功劳' }
+  },
+
+  'MBSD': {
+    code: 'Hello World',
+    name: '快乐的没心没肺',
+    desc: '你的职业生涯停在Hello World——简单、快乐、不想进阶，也确实没进阶。你把上班活成了上学——交朋友才是正事，代码只是附赠品。你的工作群消息99%是表情包和段子，你是组内气氛担当，也是HR眼中文化建设积极分子。每次team building你都是最嗨的那个，每次下午茶你都是第一个冲过去的，每次有人过生日你都是组织切蛋糕的。你不在乎晋升不焦虑技术，你觉得开心最重要，同事就是朋友，上班就是社交。你的代码能跑就行，出了bug你第一反应不是debug而是在群里发个哭笑表情包然后@同事救命。你和leader的关系很融洽，因为你从不提加薪也不争晋升，他觉得你虽然技术一般但胜在好管理。你和同事的关系更好，因为你永远是那个记得每个人生日、知道每个人口味、帮大家拼单外卖的人。你的内心没有什么独白，因为你根本不会去想那些沉重的事。别人焦虑35岁你在想周末去哪里露营，别人焦虑股票跌了你在想中午叫什么外卖。别人觉得你没追求，但你觉得他们活得太累了。你可能是对的，也可能三年后后悔——但那是三年后的事，反正你也不会去想三年后的事。你不是Hello World，你是整个公司的println("今天也要开心鸭")。',
+    bestMatch: { code: 'MBUD', label: '/dev/null', why: '快乐二人组，整个部门的氛围靠你俩撑着' },
+    worstMatch: { code: 'CRUH', label: 'git push -f', why: '他的焦虑感能隔着工位传染你' }
+  },
+
+  'MBSH': {
+    code: 'Ctrl+C Ctrl+V',
+    name: '上班养生下班资本家',
+    desc: '上班复制别人的方案，下班粘贴到自己的项目里——你是最高效的知识搬运工，也是全公司最不能以封面判断的书。上班时间你是最佛系的那个，从不加班，准点下班，聊天吹水样样精通，leader说什么你都点头微笑说好的。但你的另一面是：有自己的SaaS产品、有稳定的付费用户、技术栈比团队大多数人都新三代、副业月收入可能比你工资还高。你在公司用jQuery都不嫌弃，回家打开的是Next.js 14。你不是不能卷，你只是不想在这里卷——你把所有的聪明才智都留给了下班后的自己。你跟同事讨论技术时故意降低水平，怕暴露自己的真实实力然后被分配更多活儿。你的leader觉得你是一个安分守己的普通员工，不知道你上个月的副业收入够买他两个月的车贷。你和同事的关系是友善但保持距离，你从不在公司谈自己的副业因为你知道这会引来不必要的麻烦。你的内心独白是：上班是为了社保和稳定现金流，真正的事业在下班后。当同事在为年终奖多了还是少了一个月焦虑的时候，你已经在盘算自己产品的Q2增长策略了。你的存在证明了一件事：真正厉害的人不需要在公司证明自己——你的战场不在这里，这里只是你的ATM。',
+    bestMatch: { code: 'MRSH', label: 'VPN', why: '副业搭子，互相分享赚钱经验' },
+    worstMatch: { code: 'CRUD', label: '996.ICU', why: '他拼命想跳但跳不走，你根本不想跳因为无所谓' }
+  }
+};
+
+// ═══ 计分函数 ═══
+function calculateResult(answers) {
+  // answers 是长度32的数组，值为 0/1/2/3 (对应选项索引)
+  // 得分：选项0=1分，选项1=2分，选项2=3分，选项3=4分
+
+  const scores = [0, 0, 0, 0]; // 4组得分
+  const ranges = [[0, 8], [8, 16], [16, 24], [24, 32]]; // 每组题目范围
+
+  ranges.forEach((range, i) => {
+    for (let j = range[0]; j < range[1]; j++) {
+      scores[i] += (answers[j] + 1);
+    }
+  });
+
+  // 计算百分比（用于维度条显示）
+  const maxScores = [32, 32, 32, 32];
+  const minScores = [8, 8, 8, 8];
+  const percentages = scores.map((s, i) =>
+    Math.round((s - minScores[i]) / (maxScores[i] - minScores[i]) * 100)
+  );
+
+  // 计算字母
+  const letters = [
+    scores[0] > 20 ? 'C' : 'M',
+    scores[1] > 20 ? 'B' : 'R',
+    scores[2] > 20 ? 'S' : 'U',
+    scores[3] > 20 ? 'H' : 'D'
+  ];
+
+  const typeCode = letters.join('');
+  return { typeCode, scores, percentages, personality: PERSONALITIES[typeCode] };
+}
+
+// ═══════════════════════════════════════════════════
+//  part_logic.js — 交互逻辑
+//  依赖：QUESTIONS, PERSONALITIES, DIMENSIONS, calculateResult(answers)
+// ═══════════════════════════════════════════════════
+
+// ═══ 配置 ═══
+const API_BASE = ""; // 同源部署，留空即可；开发时可改为 "http://localhost:5000"
+
+// ═══ 状态 ═══
+let currentQuestion = 0;
+let answers = new Array(32).fill(-1); // -1 表示未回答
+
+// ═══ DOM 引用 ═══
+const pages = {
+  home: document.getElementById("page-home"),
+  quiz: document.getElementById("page-quiz"),
+  analyzing: document.getElementById("page-analyzing"),
+  result: document.getElementById("page-result"),
+};
+
+// ═══════════════════════════════════════════════════
+//  页面切换
+// ═══════════════════════════════════════════════════
+function showPage(name) {
+  Object.values(pages).forEach(function (p) {
+    p.style.display = "none";
+    p.classList.remove("active");
+  });
+  var target = pages[name];
+  target.style.display = "flex";
+  // 触发 reflow 后添加 active 触发动画
+  void target.offsetWidth;
+  target.classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════════════════
+//  答题逻辑
+// ═══════════════════════════════════════════════════
+function renderQuestion(index) {
+  currentQuestion = index;
+  var q = QUESTIONS[index];
+
+  // 更新导航
+  var nav = document.getElementById("quiz-nav");
+  nav.innerHTML = "";
+  for (var i = 0; i < 32; i++) {
+    var dot = document.createElement("div");
+    dot.className =
+      "nav-dot" +
+      (answers[i] >= 0 ? " answered" : "") +
+      (i === index ? " current" : "");
+    dot.textContent = i + 1;
+    dot.onclick = (function (idx) {
+      return function () {
+        if (answers[idx] >= 0 || idx === index) renderQuestion(idx);
+      };
+    })(i);
+    nav.appendChild(dot);
+  }
+
+  // 更新进度
+  document.getElementById("progress-bar").style.width =
+    ((index + 1) / 32) * 100 + "%";
+  document.getElementById("quiz-number").textContent =
+    "Q" + (index + 1) + "/32";
+
+  // 更新题目（带淡入效果）
+  var wrap = document.getElementById("quiz-question-wrap");
+  wrap.classList.remove("fade-in");
+  void wrap.offsetWidth;
+  wrap.classList.add("fade-in");
+
+  document.getElementById("quiz-question").textContent = q.q;
+
+  var optionsDiv = document.getElementById("quiz-options");
+  optionsDiv.innerHTML = "";
+
+  // 生成带原始索引的选项数组并 shuffle
+  var shuffled = q.opts.map(function (opt, i) { return { text: opt, origIdx: i }; });
+  for (var k = shuffled.length - 1; k > 0; k--) {
+    var r = Math.floor(Math.random() * (k + 1));
+    var tmp = shuffled[k]; shuffled[k] = shuffled[r]; shuffled[r] = tmp;
+  }
+
+  shuffled.forEach(function (item) {
+    var card = document.createElement("div");
+    card.className =
+      "option-card" + (answers[index] === item.origIdx ? " selected" : "");
+    card.textContent = item.text;
+    card.dataset.origIdx = item.origIdx;
+    card.onclick = function () {
+      selectOption(index, item.origIdx);
+    };
+    optionsDiv.appendChild(card);
+  });
+}
+
+function selectOption(qIndex, optIndex) {
+  answers[qIndex] = optIndex;
+
+  // 显示选中状态
+  document.querySelectorAll(".option-card").forEach(function (c) {
+    c.classList.toggle("selected", parseInt(c.dataset.origIdx) === optIndex);
+  });
+
+  // 延迟300ms后跳下一题或完成
+  setTimeout(function () {
+    if (qIndex < 31) {
+      // 找下一个未答的题，或直接下一题
+      renderQuestion(qIndex + 1);
+    } else {
+      // 检查是否全部作答
+      var unanswered = answers.findIndex(function (a) {
+        return a < 0;
+      });
+      if (unanswered >= 0) {
+        renderQuestion(unanswered);
+      } else {
+        startAnalyzing();
+      }
+    }
+  }, 300);
+}
+
+// ═══════════════════════════════════════════════════
+//  分析过渡页
+// ═══════════════════════════════════════════════════
+function startAnalyzing() {
+  showPage("analyzing");
+
+  var messages = [
+    "正在扫描你的996抗性...",
+    "正在计算你的摸鱼指数...",
+    "正在评估你的35岁生存概率...",
+    "正在对比全网" +
+      Math.floor(Math.random() * 50 + 30) +
+      "万打工人数据...",
+    "分析完成！你的打工人DNA已解锁 \u2713",
+  ];
+
+  var textEl = document.getElementById("analyzing-text");
+  var barEl = document.getElementById("analyzing-bar");
+  textEl.innerHTML = "";
+  barEl.style.width = "0%";
+
+  var msgIndex = 0;
+
+  function showNextMessage() {
+    if (msgIndex >= messages.length) {
+      // 全部显示完，等500ms跳结果页
+      setTimeout(function () {
+        showResult();
+      }, 500);
+      return;
+    }
+
+    barEl.style.width = ((msgIndex + 1) / messages.length) * 100 + "%";
+
+    var line = document.createElement("div");
+    textEl.appendChild(line);
+
+    // 打字机效果
+    var msg = messages[msgIndex];
+    var charIndex = 0;
+    var typeInterval = setInterval(function () {
+      if (charIndex < msg.length) {
+        line.textContent += msg[charIndex];
+        charIndex++;
+      } else {
+        clearInterval(typeInterval);
+        msgIndex++;
+        setTimeout(showNextMessage, 400);
+      }
+    }, 30);
+  }
+
+  setTimeout(showNextMessage, 300);
+}
+
+// ═══════════════════════════════════════════════════
+//  结果页
+// ═══════════════════════════════════════════════════
+function showResult() {
+  var result = calculateResult(answers);
+  var p = result.personality;
+
+  showPage("result");
+
+  document.getElementById("result-code").textContent = p.code;
+  document.getElementById("result-name").textContent = p.name;
+  document.getElementById("result-desc").textContent = p.desc;
+
+  // SVG 图标
+  var svgContainer = document.getElementById("svg-container");
+  var svgEl = svgContainer.querySelector(
+    '[data-type="' + result.typeCode + '"]'
+  );
+  document.getElementById("result-svg").innerHTML = svgEl
+    ? svgEl.outerHTML
+    : "";
+
+  // 维度条
+  var dimDiv = document.getElementById("result-dimensions");
+  dimDiv.innerHTML = "";
+  DIMENSIONS.forEach(function (dim, i) {
+    var pct = result.percentages[i]; // 0-100, 高=右侧
+    var html =
+      '<div class="dim-bar-wrap">' +
+      '<span class="dim-label">' +
+      dim.left +
+      "</span>" +
+      '<div class="dim-bar">' +
+      '<div class="dim-fill-left" style="width:' +
+      pct +
+      '%"></div>' +
+      "</div>" +
+      '<span class="dim-label">' +
+      dim.right +
+      "</span>" +
+      "</div>";
+    dimDiv.innerHTML += html;
+  });
+
+  // 相性
+  var compatDiv = document.getElementById("result-compat");
+  compatDiv.innerHTML =
+    '<div class="compat-card">' +
+    '<div class="compat-label">\uD83D\uDC9A 最佳搭档</div>' +
+    '<div class="compat-code">' +
+    p.bestMatch.label +
+    "</div>" +
+    '<div class="compat-desc">' +
+    p.bestMatch.why +
+    "</div>" +
+    "</div>" +
+    '<div class="compat-card">' +
+    '<div class="compat-label">\uD83D\uDC94 天敌</div>' +
+    '<div class="compat-code">' +
+    p.worstMatch.label +
+    "</div>" +
+    '<div class="compat-desc">' +
+    p.worstMatch.why +
+    "</div>" +
+    "</div>";
+
+  // 异步提交结果
+  submitResult(result);
+}
+
+function submitResult(result) {
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function () {
+    controller.abort();
+  }, 3000);
+
+  fetch(API_BASE + "/api/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      answers: answers,
+      result_code: result.typeCode,
+      result_name: result.personality.name,
+    }),
+    signal: controller.signal,
+  })
+    .then(function (resp) {
+      clearTimeout(timeoutId);
+      if (resp.ok) {
+        return resp.json();
+      }
+      return null;
+    })
+    .then(function (data) {
+      if (data && data.stats) {
+        var statsEl = document.getElementById("result-stats");
+        statsEl.textContent = data.stats.percentage + " 的人和你是同类";
+        statsEl.style.display = "block";
+      }
+    })
+    .catch(function () {
+      // API 失败不阻塞
+      clearTimeout(timeoutId);
+    });
+}
+
+// ═══════════════════════════════════════════════════
+//  分享功能
+// ═══════════════════════════════════════════════════
+document.getElementById("btn-share").onclick = function () {
+  var result = calculateResult(answers);
+  var p = result.personality;
+  var text =
+    "我做了个程序员人格测试，结果我是 " +
+    p.code +
+    " —— " +
+    p.name +
+    "。\n" +
+    p.desc.slice(0, 50) +
+    "...\n你也来试试？" +
+    location.href;
+
+  navigator.clipboard
+    .writeText(text)
+    .then(function () {
+      var toast = document.getElementById("copy-toast");
+      toast.style.opacity = "1";
+      setTimeout(function () {
+        toast.style.opacity = "0";
+      }, 2000);
+    })
+    .catch(function () {
+      // fallback
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      var toast = document.getElementById("copy-toast");
+      toast.style.opacity = "1";
+      setTimeout(function () {
+        toast.style.opacity = "0";
+      }, 2000);
+    });
+};
+
+document.getElementById("btn-invite").onclick = function () {
+  var text =
+    "来测测你是什么类型的打工人！互联网大厂程序员人格鉴定 \uD83D\uDC49 " +
+    location.href;
+  navigator.clipboard.writeText(text).then(function () {
+    var toast = document.getElementById("copy-toast");
+    toast.textContent = "链接已复制，快去分享！";
+    toast.style.opacity = "1";
+    setTimeout(function () {
+      toast.style.opacity = "0";
+      toast.textContent = "已复制到剪贴板！";
+    }, 2000);
+  });
+};
+
+document.getElementById("btn-restart").onclick = function () {
+  answers = new Array(32).fill(-1);
+  currentQuestion = 0;
+  showPage("home");
+};
+
+// ═══════════════════════════════════════════════════
+//  初始化
+// ═══════════════════════════════════════════════════
+
+// 页面加载时
+showPage("home");
+
+// 获取统计数据
+(function () {
+  var controller = new AbortController();
+  setTimeout(function () {
+    controller.abort();
+  }, 3000);
+
+  fetch(API_BASE + "/api/stats", { signal: controller.signal })
+    .then(function (resp) {
+      if (resp.ok) {
+        return resp.json();
+      }
+      return null;
+    })
+    .then(function (data) {
+      if (data && data.total > 0) {
+        document.getElementById("total-count").textContent =
+          data.total.toLocaleString();
+      }
+    })
+    .catch(function () {
+      // 兜底数字
+      document.getElementById("total-count").textContent = (
+        Math.floor(Math.random() * 30000) + 50000
+      ).toLocaleString();
+    });
+})();
+
+// 按钮绑定
+document.getElementById("btn-start").onclick = function () {
+  showPage("quiz");
+  renderQuestion(0);
+};
+  </script>
+</body>
+</html>
