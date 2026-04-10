@@ -1418,25 +1418,6 @@ function submitResult(result) {
       }
     }).catch(function () {});
   }, 1000);
-  // 2. 插入后稍等再查统计
-  setTimeout(function () {
-    Promise.all([
-      fetch(SUPABASE_URL + "/rest/v1/records?select=id&result_code=eq." + result.typeCode, {
-        headers: SB_HEADERS,
-      }).then(function (r) { return r.json(); }).then(function (d) { return d.length; }),
-      fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
-        headers: SB_HEADERS,
-      }).then(function (r) { return r.json(); }).then(function (d) { return d.length; })
-    ]).then(function (counts) {
-      var same = counts[0], total = counts[1];
-      if (total > 0) {
-        var pct = (same / total * 100).toFixed(1) + "%";
-        var statsEl = document.getElementById("result-stats");
-        statsEl.textContent = pct + " 的人和你是同类（共 " + total + " 人参与）";
-        statsEl.style.display = "block";
-      }
-    }).catch(function () {});
-  }, 1000);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1513,13 +1494,10 @@ showPage("home");
   fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
     headers: SB_HEADERS,
   })
-    .then(function (resp) {
-      var range = resp.headers.get("content-range");
-      if (range) {
-        var total = parseInt(range.split("/")[1]) || 0;
-        if (total > 0) {
-          document.getElementById("total-count").textContent = total.toLocaleString();
-        }
+    .then(function (resp) { return resp.json(); })
+    .then(function (data) {
+      if (data && data.length > 0) {
+        document.getElementById("total-count").textContent = data.length.toLocaleString();
       }
     })
     .catch(function () {
