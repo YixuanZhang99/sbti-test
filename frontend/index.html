@@ -369,7 +369,7 @@
     <div style="background:#E0E0E0;border-radius:3px;height:6px;margin-bottom:8px">
       <div id="progress-bar" style="background:var(--gradient);height:100%;border-radius:3px;width:0;transition:width 0.3s ease"></div>
     </div>
-    <p id="quiz-number" style="color:var(--text-light);font-size:14px;margin-bottom:16px">Q1/32</p>
+    <p id="quiz-number" style="color:var(--text-light);font-size:14px;margin-bottom:16px">Q1/24</p>
     <div id="quiz-question-wrap">
       <h2 id="quiz-question" style="font-size:1.25rem;margin-bottom:24px"></h2>
       <div id="quiz-options"></div>
@@ -914,48 +914,40 @@
 
   <script>
 // ═══════════════════════════════════════════════════════════
-//  part_data.js — 纯数据文件，32 道题目 + 16 种人格结果
+//  part_data.js — 纯数据文件，24 道题目 + 16 种人格结果
 //  不包含任何 DOM 操作或交互逻辑
 // ═══════════════════════════════════════════════════════════
 
 // ═══ 题目数据 ═══
 const QUESTIONS = [
-  // ── 第1组：C(卷) vs M(摸)  Q1-Q8 ──
+  // ── 第1组：C(卷) vs M(摸)  Q1-Q6 ──
   { q: '周五晚上11点，你的IDE状态是？', opts: ['IDE是啥？我只认识爱奇艺', '两小时前就关了，现在躺床上刷沙雕视频', '还开着，顺手重构了两个函数再睡', '正在写第三个PR，顺便帮隔壁组修了个bug'] },
-  { q: '同事用Cursor/Copilot一小时写完了你两天的活，你？', opts: ['太好了，以后摸鱼时间更多了', '也装了一个，让AI写代码我负责摸鱼', '研究了一晚上Prompt Engineering想超过他', '我已经用AI Agent搭了一套自动化工作流了'] },
   { q: '领导在群里@所有人"今晚必须上线"，你？', opts: ['手机调飞行模式，明早装作没看到', '回个"收到"然后打开外卖APP犒劳自己', '叹口气开始干活，边骂边写', '两小时前就部署好了，正在写复盘文档'] },
   { q: '你的Git提交时间分布长啥样？', opts: ['全在工作日10点到5点，精准卡点上下班', '偶尔有个晚8点的记录，那是白天摸多了还债', '凌晨2点的commit不少，但我不承认是在卷', '7x24均匀分布，CI/CD都觉得我是个机器人'] },
-  { q: '领导说"用AI重写这个系统"，你？', opts: ['太好了，AI写完我直接躺', '让ChatGPT生成个方案交差', '评估了三个大模型选了最合适的落地', '连夜搭了个RAG+Agent的Demo第二天早会就演示了'] },
-  { q: '午休时间你一般在干嘛？', opts: ['12点冲食堂，1点半前绝不回工位', '眼罩一戴椅子一放平，叫魂都叫不醒', '边吃边刷技术博客，假装自己很上进', '什么午休？我午饭都是对着监控面板吃的'] },
+  { q: '同事用Cursor/Copilot一小时写完了你两天的活，你？', opts: ['太好了，以后摸鱼时间更多了', '也装了一个，让AI写代码我负责摸鱼', '研究了一晚上Prompt Engineering想超过他', '我已经用AI Agent搭了一套自动化工作流了'] },
   { q: '年度晋升答辩你准备了多久？', opts: ['晋升？别3.25就烧高香了', '前一天晚上现编PPT，截图都是临时找的', '提前两周把项目包装了一番还rehearse了', '半年前就开始埋数据，每个季度都有增长曲线'] },
-  { q: '你电脑上装了几个AI编程工具？', opts: ['0个，我连ChatGPT都懒得注册', '装了Copilot偶尔用用，主要还是自己写', 'Cursor+Copilot+Claude Code全副武装', 'AI工具不够用，我还自己微调了个代码模型'] },
+  { q: '领导说"用AI重写这个系统"，你？', opts: ['太好了，AI写完我直接躺', '让ChatGPT生成个方案交差', '评估了三个大模型选了最合适的落地', '连夜搭了个RAG+Agent的Demo第二天早会就演示了'] },
 
-  // ── 第2组：R(润) vs B(苟)  Q9-Q16 ──
+  // ── 第2组：R(润) vs B(苟)  Q7-Q12 ──
   { q: '猎头给你发"在看机会吗"，你？', opts: ['都不用看JD，直接回"随时on call"', '认真看完薪资范围后秒发了份最新简历', '有一搭没一搭聊着，就当了解行情了', '"谢谢关注，暂不考虑"，然后把人删了'] },
   { q: '组里空降了个比你年轻五岁但title比你高的人？', opts: ['简历当天更新，三天后开始请"病假"面试', '默默打开Boss直聘看了看自己的市场价', '心里酸了一下但很快继续搬砖了', '主动找人家请教学习，多个大腿多条路'] },
-  { q: '遇到bug你第一反应是？', opts: ['先问ChatGPT/Claude，AI秒解决', '扔给AI看看，不行再自己翻文档', '先自己分析调用链，实在不行再搜', '脑内已经定位到是哪行代码了，直接改'] },
   { q: '听说隔壁组HC全部冻结了，你？', opts: ['危险信号！当晚就启动了Plan B', '悄悄投了两家试试水温，骑驴找马', '有点慌但觉得自己业务线还算安全', '稳如老狗，我这块业务缺了我转不了'] },
   { q: '你手机上装了几个招聘APP？', opts: ['Boss脉脉拉勾猎聘领英，一个都不能少', '装了俩但简历状态一直是"在看机会"', '以前装过后来卸了，太焦虑了', '从来没装过，有需要让朋友内推就行'] },
   { q: '年终奖到账的第二天，你？', opts: ['简历已投出三十封，年终是最后的体面', '开始认真考虑下一步了，该走就走', '数了数钱觉得还行，继续苟着吧', '感恩公司培养，干劲比年前更足了'] },
-  { q: '"AI要取代程序员"的新闻又刷屏了，你？', opts: ['终于可以不用写代码了，解放！', '有点慌，默默去学了下Prompt Engineering', '不慌，AI替代的是初级工作，我负责架构设计', '笑了，昨天刚用AI帮我十倍提效，取代的是不会用AI的人'] },
   { q: '公司突然宣布全员降薪15%，你？', opts: ['当天就把简历设成"离职-随时到岗"', '先忍忍，但已经开始骑驴找马了', '虽然肉疼但能理解，共渡难关嘛', '主动跟领导表态"我这边没问题"'] },
 
-  // ── 第3组：U(独狼) vs S(社牛)  Q17-Q24 ──
+  // ── 第3组：U(独狼) vs S(社牛)  Q13-Q18 ──
   { q: '需求评审会上产品经理画了个巨饼，你？', opts: ['全程静音假装网卡，散会后看文档就行', '被@了才开麦说一句"我这边没问题"', '指出三个技术风险并给了替代方案', '化身产品经理本体，比PM还能讲用户场景'] },
   { q: '团建通知发下来了，你的第一反应？', opts: ['打开请假系统，我奶奶又要"住院"了', '人去了但全程戴耳机当透明人', '跟几个熟人组队还挺开心的', '我来当主持人吧！游戏环节我都设计好了'] },
   { q: '食堂排队遇到不太熟的同事，你？', opts: ['瞬间低头看手机假装在处理紧急bug', '点头微笑然后默念"千万别跟我说话"', '聊两句食堂今天啥菜好吃', '从工作聊到房价，打完饭了还意犹未尽'] },
-  { q: 'Code Review发现同事的代码90%是AI生成的，你？', opts: ['大家不都是AI写的吗？有啥好说的', '心里默默吐槽但打了个LGTM', '留了几条comment指出AI生成的典型问题', '当场拉会分享了"如何正确使用AI辅助编程"'] },
   { q: '公司搞技术分享日，你？', opts: ['听说不强制签到？那我就不去了', '坐最后一排戴耳机全程神游', '准备了个话题上去讲了二十分钟', '讲完还现场Q&A半小时，散场加了八个微信'] },
-  { q: '工作群里有人问"这个用AI能实现吗"，你？', opts: ['看见了但假装没看见，多一事不如少一事', '甩了个ChatGPT链接：你自己问它吧', '简短回了下哪些场景适合用AI哪些不适合', '写了一大段RAG+Agent+微调的方案对比，还附了Demo'] },
-  { q: '你的企微/钉钉头像和签名是？', opts: ['系统默认头像，签名为空，查无此人', '随便选了张风景图，签名是"。"', '正经证件照加职级信息', '定期更新，签名是最新技术观点配上金句'] },
+  { q: '工作群里有人问了个你擅长的技术问题，你？', opts: ['看见了但假装没看见，多一事不如少一事', '私聊甩给他一个Stack Overflow链接', '群里简短回了下思路', '写了一大段图文并茂的教程，还附了三种方案对比'] },
   { q: '跨组协作要推动一个事情，你？', opts: ['发条消息等回复，没人理就当黄了', '写封邮件抄送几个人，仁至义尽', '主动拉群逐个@，对齐排期', '建了项目群拉了三次会还做了周报同步机制'] },
 
-  // ── 第4组：D(为自己) vs H(为公司)  Q25-Q32 ──
+  // ── 第4组：D(为自己) vs H(为公司)  Q19-Q24 ──
   { q: '你写代码最嗨的时刻是？', opts: ['搞side project上线了有人付费的那一刻', '解决自己感兴趣的技术难题时', '公司核心业务上线后看着监控指标飙升', '年会上自己的项目被CTO点名表扬'] },
   { q: '你深夜学新技术，学的是什么？', opts: ['LLM微调/Agent开发这种纯粹好玩的', '独立开发全栈+AI，为自己的产品做储备', '跟晋升评审直接相关的技术栈', '公司下季度要上的大模型项目，提前卷起来'] },
   { q: '你的个人项目/服务器上跑着什么？', opts: ['自己的AI套壳产品，已经有付费用户了', '各种开源模型和技术博客', '公司项目的测试环境，方便自己调试', '个人项目？每天给公司写代码哪有空搞'] },
-  { q: '关于写周报这件事？', opts: ['把真正的产出藏起来，公司部分能水就水', '一半工作一半注水，给自己留充足摸鱼时间', '认真写，顺便向上管理展示价值', '每周五花两小时精雕细琢，确保领导看到亮点'] },
-  { q: '公司让你接手一个祖传系统，你？', opts: ['先让Claude/GPT读一遍代码帮我理清逻辑', '挑能写进简历的部分学，剩下的让AI维护', '认真重构当技术练兵场，顺便引入AI辅助', '全力维护！这是公司命脉，责无旁贷'] },
   { q: '技术选型时你脑子里第一个念头？', opts: ['哪个对我简历最加分就选哪个', '哪个我最想学就选哪个', '综合评估后选最适合团队和项目的', '公司已有的技术栈优先，稳定压倒一切'] },
   { q: '半夜三点线上报警了，你？', opts: ['手机常年静音，明早再说', '看了眼确认不是自己的服务，翻身继续睡', '爬起来修了，毕竟影响SLA绩效就完了', '秒起修复还写了篇复盘文档发到全组群里'] },
   { q: '如果公司给你三个月带薪假，你？', opts: ['全职搞自己的独立产品，争取上线赚钱', '学点跟公司完全无关的技术，给自己充电', '休息一阵后提前回来帮团队赶项目', '不需要假期，手上的项目正到关键节点离不开我'] }
@@ -1102,11 +1094,11 @@ const PERSONALITIES = {
 
 // ═══ 计分函数 ═══
 function calculateResult(answers) {
-  // answers 是长度32的数组，值为 0/1/2/3 (对应选项索引)
+  // answers 是长度24的数组，值为 0/1/2/3 (对应选项索引)
   // 得分：选项0=1分，选项1=2分，选项2=3分，选项3=4分
 
   const scores = [0, 0, 0, 0]; // 4组得分
-  const ranges = [[0, 8], [8, 16], [16, 24], [24, 32]]; // 每组题目范围
+  const ranges = [[0, 6], [6, 12], [12, 18], [18, 24]]; // 每组题目范围
 
   ranges.forEach((range, i) => {
     for (let j = range[0]; j < range[1]; j++) {
@@ -1115,18 +1107,18 @@ function calculateResult(answers) {
   });
 
   // 计算百分比（用于维度条显示）
-  const maxScores = [32, 32, 32, 32];
-  const minScores = [8, 8, 8, 8];
+  const maxScores = [24, 24, 24, 24];
+  const minScores = [6, 6, 6, 6];
   const percentages = scores.map((s, i) =>
     Math.round((s - minScores[i]) / (maxScores[i] - minScores[i]) * 100)
   );
 
-  // 计算字母
+  // 计算字母（中位数15）
   const letters = [
-    scores[0] > 20 ? 'C' : 'M',
-    scores[1] > 20 ? 'B' : 'R',
-    scores[2] > 20 ? 'S' : 'U',
-    scores[3] > 20 ? 'H' : 'D'
+    scores[0] > 15 ? 'C' : 'M',
+    scores[1] > 15 ? 'B' : 'R',
+    scores[2] > 15 ? 'S' : 'U',
+    scores[3] > 15 ? 'H' : 'D'
   ];
 
   const typeCode = letters.join('');
@@ -1155,7 +1147,7 @@ function sbHeaders(extra) {
 
 // ═══ 状态 ═══
 let currentQuestion = 0;
-let answers = new Array(32).fill(-1); // -1 表示未回答
+let answers = new Array(24).fill(-1); // -1 表示未回答
 
 // ═══ DOM 引用 ═══
 const pages = {
@@ -1191,7 +1183,7 @@ function renderQuestion(index) {
   // 更新导航
   var nav = document.getElementById("quiz-nav");
   nav.innerHTML = "";
-  for (var i = 0; i < 32; i++) {
+  for (var i = 0; i < 24; i++) {
     var dot = document.createElement("div");
     dot.className =
       "nav-dot" +
@@ -1208,9 +1200,9 @@ function renderQuestion(index) {
 
   // 更新进度
   document.getElementById("progress-bar").style.width =
-    ((index + 1) / 32) * 100 + "%";
+    ((index + 1) / 24) * 100 + "%";
   document.getElementById("quiz-number").textContent =
-    "Q" + (index + 1) + "/32";
+    "Q" + (index + 1) + "/24";
 
   // 更新题目（带淡入效果）
   var wrap = document.getElementById("quiz-question-wrap");
@@ -1253,7 +1245,7 @@ function selectOption(qIndex, optIndex) {
 
   // 延迟300ms后跳下一题或完成
   setTimeout(function () {
-    if (qIndex < 31) {
+    if (qIndex < 23) {
       // 找下一个未答的题，或直接下一题
       renderQuestion(qIndex + 1);
     } else {
@@ -1407,24 +1399,44 @@ function submitResult(result) {
     }),
   }).catch(function () {});
 
-  // 2. 查询同类型人数占比
-  var countHeaders = sbHeaders({"Prefer": "count=exact"});
-  Promise.all([
-    fetch(SUPABASE_URL + "/rest/v1/records?select=id&result_code=eq." + result.typeCode, {
-      method: "HEAD", headers: countHeaders,
-    }).then(function (r) { return parseInt(r.headers.get("content-range").split("/")[1]) || 0; }),
-    fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
-      method: "HEAD", headers: countHeaders,
-    }).then(function (r) { return parseInt(r.headers.get("content-range").split("/")[1]) || 0; })
-  ]).then(function (counts) {
-    var same = counts[0], total = counts[1];
-    if (total > 0) {
-      var pct = (same / total * 100).toFixed(1) + "%";
-      var statsEl = document.getElementById("result-stats");
-      statsEl.textContent = pct + " 的人和你是同类（共 " + total + " 人参与）";
-      statsEl.style.display = "block";
-    }
-  }).catch(function () {});
+  // 2. 插入后稍等再查统计
+  setTimeout(function () {
+    Promise.all([
+      fetch(SUPABASE_URL + "/rest/v1/records?select=id&result_code=eq." + result.typeCode, {
+        headers: SB_HEADERS,
+      }).then(function (r) { return r.json(); }).then(function (d) { return d.length; }),
+      fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
+        headers: SB_HEADERS,
+      }).then(function (r) { return r.json(); }).then(function (d) { return d.length; })
+    ]).then(function (counts) {
+      var same = counts[0], total = counts[1];
+      if (total > 0) {
+        var pct = (same / total * 100).toFixed(1) + "%";
+        var statsEl = document.getElementById("result-stats");
+        statsEl.textContent = pct + " 的人和你是同类（共 " + total + " 人参与）";
+        statsEl.style.display = "block";
+      }
+    }).catch(function () {});
+  }, 1000);
+  // 2. 插入后稍等再查统计
+  setTimeout(function () {
+    Promise.all([
+      fetch(SUPABASE_URL + "/rest/v1/records?select=id&result_code=eq." + result.typeCode, {
+        headers: SB_HEADERS,
+      }).then(function (r) { return r.json(); }).then(function (d) { return d.length; }),
+      fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
+        headers: SB_HEADERS,
+      }).then(function (r) { return r.json(); }).then(function (d) { return d.length; })
+    ]).then(function (counts) {
+      var same = counts[0], total = counts[1];
+      if (total > 0) {
+        var pct = (same / total * 100).toFixed(1) + "%";
+        var statsEl = document.getElementById("result-stats");
+        statsEl.textContent = pct + " 的人和你是同类（共 " + total + " 人参与）";
+        statsEl.style.display = "block";
+      }
+    }).catch(function () {});
+  }, 1000);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1484,7 +1496,7 @@ document.getElementById("btn-invite").onclick = function () {
 };
 
 document.getElementById("btn-restart").onclick = function () {
-  answers = new Array(32).fill(-1);
+  answers = new Array(24).fill(-1);
   currentQuestion = 0;
   showPage("home");
 };
@@ -1499,8 +1511,7 @@ showPage("home");
 // 获取统计数据
 (function () {
   fetch(SUPABASE_URL + "/rest/v1/records?select=id", {
-    method: "HEAD",
-    headers: sbHeaders({"Prefer": "count=exact"}),
+    headers: SB_HEADERS,
   })
     .then(function (resp) {
       var range = resp.headers.get("content-range");
